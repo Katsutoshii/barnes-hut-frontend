@@ -4,7 +4,9 @@
   "version": "0.1.0",
   "scripts": {
     "build": "rimraf dist pkg && webpack",
-    "start": "rimraf dist pkg && webpack-dev-server --open -d",
+    "start:jsx": "npx babel --watch js/react --out-dir js/ --presets react-app/prod",
+    "start:server": "rimraf dist pkg && webpack-dev-server --open -d",
+    "start": "npm run start:jsx & npm run start:server",
     "test": "cargo test && wasm-pack test --headless"
   },
   "devDependencies": {
@@ -14,5 +16,24 @@
     "webpack-cli": "^3.3.3",
     "webpack-dev-server": "^3.7.1",
     "rimraf": "^3.0.0"
-  }
+  },
+  "description": "Based on https://github.com/rustwasm/rust-webpack-template.",
+  "main": "webpack.config.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-react-app": "^3.1.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zephyo/galaxy_aug_2020.git"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zephyo/galaxy_aug_2020/issues"
+  },
+  "homepage": "https://github.com/zephyo/galaxy_aug_2020#readme"
 }

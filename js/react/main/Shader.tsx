@@ -1,9 +1,18 @@
 import React from "react";
 import { Shaders, Node } from "gl-react";
-import GLSL from "../webgl/GLSL";
+import { GLSL } from "gl-react";
+// import Particles from "raw-loader!glslify-loader!./shaders/Particles.glsl";
 
 const shaders = Shaders.create({
-  GLSL,
+  GLSL: {
+    frag: GLSL`
+    precision highp float;
+    varying vec2 uv;
+    uniform vec4 array;
+    void main() {
+      gl_FragColor = array * vec4(uv.x, uv.y, 1.0, 1.0);
+    }`,
+  },
 });
 
 type Props = {

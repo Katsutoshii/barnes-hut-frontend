@@ -24,6 +24,11 @@ module.exports = (_, { mode }) => ({
           "sass-loader",
         ],
       },
+      {
+        test: /\.(glsl|vs|fs|vert|frag)$/,
+        exclude: /node_modules/,
+        use: ["raw-loader", "glslify-loader"],
+      },
     ],
   },
   devServer: {

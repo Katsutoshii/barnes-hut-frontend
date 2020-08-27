@@ -3,13 +3,9 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::console;
 
-// Create a static mutable byte buffer.
-// We will use for passing memory between js and wasm.
-// NOTE: global `static mut` means we will have "unsafe" code
-// but for passing memory between js and wasm should be fine.
-pub const NUM_PARTICLES: usize = 4;
-static mut X_POSITIONS: [u8; NUM_PARTICLES] = [0, 2, 3, 2];
-static mut Y_POSITIONS: [u8; NUM_PARTICLES] = [1, 5, 4, 1];
+pub mod nbody;
+
+use nbody::{SIMULATION, NUM_PARTICLES, generate_galaxy};
 
 // When the `wee_alloc` feature is enabled, this uses `wee_alloc` as the global
 // allocator.
@@ -30,30 +26,24 @@ pub fn get_wasm_memory() -> Result<JsValue, JsValue> {
 
 // Function to return a pointer to X_POSITIONS
 #[wasm_bindgen]
-pub fn get_x_positions_pointer() -> *const u8 {
-    let pointer: *const u8;
+pub fn set_rx(rx: &mut [f32]) {
     unsafe {
-        pointer = X_POSITIONS.as_ptr();
+        SIMULATION.rx = Vec::from_raw_parts(rx.as_mut_ptr(), NUM_PARTICLES, NUM_PARTICLES);
+        for i in 0..SIMULATION.n {
+            SIMULATION.rx[i] = 1.;
+        }
     }
-
-    return pointer;
 }
 
-// Function to return a pointer to Y_POSITIONS
+// Function to return a pointer to X_POSITIONS
 #[wasm_bindgen]
-pub fn get_y_positions_pointer() -> *const u8 {
-    let pointer: *const u8;
+pub fn set_ry(ry: &mut [f32]) {
     unsafe {
-        pointer = Y_POSITIONS.as_ptr();
+        SIMULATION.ry = Vec::from_raw_parts(ry.as_mut_ptr(), NUM_PARTICLES, NUM_PARTICLES);
+        for i in 0..SIMULATION.n {
+            SIMULATION.ry[i] = 1.;
+        }
     }
-
-    return pointer;
-}
-
-// Function to return a pointer to our array in our wasm memory buffer
-#[wasm_bindgen]
-pub fn get_wasm_buffer_size() -> usize {
-    return NUM_PARTICLES;
 }
 
 // This is like the `main` function, except for JavaScript.
@@ -63,6 +53,9 @@ pub fn main_js() -> Result<(), JsValue> {
     // It's disabled in release mode so it doesn't bloat up the file size.
     #[cfg(debug_assertions)]
     console_error_panic_hook::set_once();
+    // unsafe {
+    //     generate_galaxy(&mut SIMULATION);
+    // }
 
     // Your code goes here!
     console::log_1(&JsValue::from_str("Bye world!"));

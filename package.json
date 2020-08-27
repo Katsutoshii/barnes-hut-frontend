@@ -4,9 +4,8 @@
   "version": "0.1.0",
   "scripts": {
     "build": "rimraf dist pkg && webpack --mode production",
-    "start:remove": "rm -rf js/build",
     "start:server": "rimraf dist pkg && webpack-dev-server --open -d --mode development",
-    "start": "npm run start:remove && npm run start:server",
+    "start": "npm run start:server",
     "test": "cargo test && wasm-pack test --headless"
   },
   "devDependencies": {
@@ -22,6 +21,7 @@
     "babel-core": "^7.0.0-bridge.0",
     "babel-jest": "^26.3.0",
     "copy-webpack-plugin": "^5.0.3",
+    "cross-env": "^7.0.2",
     "css-loader": "^4.2.1",
     "glslify": "^7.1.0",
     "jest": "^26.4.2",

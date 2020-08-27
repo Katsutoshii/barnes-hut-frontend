@@ -1,11 +1,13 @@
 import React from "react";
 import { Shaders, Node } from "gl-react";
 import { GLSL } from "gl-react";
-import Particles from "../../shaders/Particles.glsl";
+import Fragment from "../../shaders/Particles.frag";
+// import Vert from "../../shaders/Particles.vert";
 
 const shaders = Shaders.create({
-  GLSL: {
-    frag: GLSL`${Particles}`,
+  Particles: {
+    frag: GLSL`${Fragment}`,
+    // vert: GLSL`${Vert}`,
   },
 });
 
@@ -15,5 +17,5 @@ type Props = {
 };
 
 export default function Shader(props: Props) {
-  return <Node shader={shaders.GLSL} uniforms={{ ...props }} />;
+  return <Node shader={shaders.Particles} uniforms={{ ...props }} />;
 }

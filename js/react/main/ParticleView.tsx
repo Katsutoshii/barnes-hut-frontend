@@ -1,20 +1,22 @@
 import React from "react";
 import { Surface } from "gl-react-dom"; // for React DOM
-import ErrorBoundary from "./../utils/ErrorBoundary";
-import Shader from "./Shader";
+import ErrorBoundary from "../utils/ErrorBoundary";
+import ParticleShader from "./ParticleShader";
 
 type Props = {
-  array: Uint8Array;
+  xArray: Uint8Array;
+  yArray: Uint8Array;
 };
 
 function ShaderView(props: Props) {
-  const { array } = props;
+  const { xArray, yArray } = props;
   return (
     <div className="container">
-      <div>Input: {array.join(",")}</div>
+      <div>X Pos: {xArray.join(",")}</div>
+      <div>Y Pos: {yArray.join(",")}</div>
       <ErrorBoundary>
         <Surface width={300} height={300}>
-          <Shader array={array} />
+          <ParticleShader xArray={xArray} yArray={yArray} />
         </Surface>
       </ErrorBoundary>
     </div>

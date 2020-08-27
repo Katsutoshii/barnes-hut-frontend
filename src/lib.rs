@@ -7,8 +7,9 @@ use web_sys::console;
 // We will use for passing memory between js and wasm.
 // NOTE: global `static mut` means we will have "unsafe" code
 // but for passing memory between js and wasm should be fine.
-pub const WASM_MEMORY_BUFFER_SIZE: usize = 4;
-static mut WASM_MEMORY_BUFFER: [u8; WASM_MEMORY_BUFFER_SIZE] = [0, 2, 3, 2];
+pub const NUM_PARTICLES: usize = 4;
+static mut X_POSITIONS: [u8; NUM_PARTICLES] = [0, 2, 3, 2];
+static mut Y_POSITIONS: [u8; NUM_PARTICLES] = [1, 5, 4, 1];
 
 // When the `wee_alloc` feature is enabled, this uses `wee_alloc` as the global
 // allocator.
@@ -27,12 +28,23 @@ pub fn get_wasm_memory() -> Result<JsValue, JsValue> {
     }
 }
 
-// Function to return a pointer to our array in our wasm memory buffer
+// Function to return a pointer to X_POSITIONS
 #[wasm_bindgen]
-pub fn get_wasm_memory_buffer_pointer() -> *const u8 {
+pub fn get_x_positions_pointer() -> *const u8 {
     let pointer: *const u8;
     unsafe {
-        pointer = WASM_MEMORY_BUFFER.as_ptr();
+        pointer = X_POSITIONS.as_ptr();
+    }
+
+    return pointer;
+}
+
+// Function to return a pointer to Y_POSITIONS
+#[wasm_bindgen]
+pub fn get_y_positions_pointer() -> *const u8 {
+    let pointer: *const u8;
+    unsafe {
+        pointer = Y_POSITIONS.as_ptr();
     }
 
     return pointer;
@@ -41,7 +53,7 @@ pub fn get_wasm_memory_buffer_pointer() -> *const u8 {
 // Function to return a pointer to our array in our wasm memory buffer
 #[wasm_bindgen]
 pub fn get_wasm_buffer_size() -> usize {
-    return WASM_MEMORY_BUFFER_SIZE;
+    return NUM_PARTICLES;
 }
 
 // This is like the `main` function, except for JavaScript.

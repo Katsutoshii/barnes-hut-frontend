@@ -1,16 +1,17 @@
 import "../scss/App.scss";
-import ShaderView from "./main/ShaderView";
+import ParticleView from "./main/ParticleView";
 
 type Props = {
-  array: Uint8Array;
+  xArray: Uint8Array;
+  yArray: Uint8Array;
 };
 
 export default function Root(props: Props) {
-  const { array } = props;
+  const { xArray, yArray } = props;
 
   return (
     <div>
-      <ShaderView array={array} />
+      <ParticleView xArray={xArray} yArray={yArray} />
     </div>
   );
 }

@@ -10,10 +10,10 @@ const shaders = Shaders.create({
 });
 
 type Props = {
-  array: Uint8Array;
+  xArray: Uint8Array;
+  yArray: Uint8Array;
 };
 
 export default function Shader(props: Props) {
-  const { array } = props;
-  return <Node shader={shaders.GLSL} uniforms={{ array }} />;
+  return <Node shader={shaders.GLSL} uniforms={{ ...props }} />;
 }

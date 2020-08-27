@@ -7,7 +7,8 @@ import("../pkg/index.js")
     // Get rust's wasm memory
     const wasmMemory = new Uint8Array(rustWasm.get_wasm_memory());
     // Then, get the pointer to our buffer that is within wasmMemory
-    const pointer = rustWasm.get_wasm_memory_buffer_pointer();
+    const x_pointer = rustWasm.get_x_positions_pointer();
+    const y_pointer = rustWasm.get_y_positions_pointer();
     // Get length
     const length = rustWasm.get_wasm_buffer_size();
 
@@ -15,7 +16,10 @@ import("../pkg/index.js")
       React.createElement(
         Root,
         // shallow copy the part of the memory containing the array
-        { array: wasmMemory.slice(pointer, pointer + length) }
+        {
+          xArray: wasmMemory.slice(x_pointer, x_pointer + length),
+          yArray: wasmMemory.slice(y_pointer, y_pointer + length),
+        }
       ),
       document.getElementById("root")
     );

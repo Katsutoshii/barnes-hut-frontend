@@ -23,7 +23,7 @@ function _templateObject() {
 
 function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
-// import Particles from "raw-loader!glslify-loader!./shaders/Particles.glsl";
+// import Particles from "../../shaders/Particles.glsl";
 var shaders = _glReact.Shaders.create({
   GLSL: {
     frag: (0, _glReact.GLSL)(_templateObject())
@@ -31,6 +31,7 @@ var shaders = _glReact.Shaders.create({
 });
 
 function Shader(props) {
+  // console.log(Particles);
   var array = props.array;
   return /*#__PURE__*/_react["default"].createElement(_glReact.Node, {
     shader: shaders.GLSL,

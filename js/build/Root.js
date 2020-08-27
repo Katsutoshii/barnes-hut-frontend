@@ -1,12 +1,15 @@
 "use strict";
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = Root;
+
 require("../scss/App.scss");
 
 var _ShaderView = _interopRequireDefault(require("./main/ShaderView"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-"use strict";
 
 function Root(props) {
   var array = props.array;
@@ -14,8 +17,4 @@ function Root(props) {
     array: array
   }));
 }
-
-module.exports = {
-  Root: Root
-};
 //# sourceMappingURL=Root.js.map

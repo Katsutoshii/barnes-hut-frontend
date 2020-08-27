@@ -1,5 +1,5 @@
-var ReactDOM = require("react-dom");
-var { Root } = require("./build/Root");
+import ReactDOM from "react-dom";
+import Root from "./react/Root";
 
 import("../pkg/index.js")
   .then((rustWasm) => {

@@ -17,6 +17,10 @@ module.exports = (_, { mode }) => ({
     rules: [
       // other rules here
       {
+        test: /\.tsx?$/,
+        loader: "babel-loader",
+      },
+      {
         test: /\.s?css$/i,
         use: [
           mode === "production" ? MiniCssExtractPlugin.loader : "style-loader",
@@ -30,6 +34,9 @@ module.exports = (_, { mode }) => ({
         use: ["raw-loader", "glslify-loader"],
       },
     ],
+  },
+  resolve: {
+    extensions: [".ts", ".tsx", ".js", ".jsx"],
   },
   devServer: {
     contentBase: dist,

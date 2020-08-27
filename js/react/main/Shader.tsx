@@ -1,7 +1,7 @@
 import React from "react";
 import { Shaders, Node } from "gl-react";
 import { GLSL } from "gl-react";
-// import Particles from "raw-loader!glslify-loader!./shaders/Particles.glsl";
+// import Particles from "../../shaders/Particles.glsl";
 
 const shaders = Shaders.create({
   GLSL: {
@@ -20,6 +20,7 @@ type Props = {
 };
 
 export default function Shader(props: Props) {
+  // console.log(Particles);
   const { array } = props;
   return <Node shader={shaders.GLSL} uniforms={{ array }} />;
 }

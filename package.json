@@ -5,8 +5,6 @@
   "scripts": {
     "build": "rimraf dist pkg && webpack --mode production",
     "start:remove": "rm -rf js/build",
-    "start:glsl": "mkdir -p js/build/shaders && cp -r js/shaders js/build/",
-    "start:jsx": "npx babel --watch js --out-dir js/build --extensions \".ts,.tsx\" --source-maps",
     "start:server": "rimraf dist pkg && webpack-dev-server --open -d --mode development",
     "start": "npm run start:remove && npm run start:server",
     "test": "cargo test && wasm-pack test --headless"

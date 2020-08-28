@@ -14,9 +14,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "d
 function Root(props) {
   var xArray = props.xArray,
       yArray = props.yArray;
-  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(_ParticleView["default"], {
-    xArray: xArray,
-    yArray: yArray
-  }));
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(_ParticleView["default"], null));
 }
 //# sourceMappingURL=Root.js.map

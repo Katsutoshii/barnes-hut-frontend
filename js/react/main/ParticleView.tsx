@@ -1,23 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Surface } from "gl-react-dom"; // for React DOM
 import ErrorBoundary from "../utils/ErrorBoundary";
 import ParticleShader from "./ParticleShader";
 
-type Props = {
-  xArray: Uint8Array;
-  yArray: Uint8Array;
-};
+type Props = {};
 
 function ShaderView(props: Props) {
-  const { xArray, yArray } = props;
+  useEffect(() => {
+    ParticleShader();
+  }, []);
   return (
     <div className="container">
-      <div>X Pos: {xArray.join(",")}</div>
-      <div>Y Pos: {yArray.join(",")}</div>
       <ErrorBoundary>
-        <Surface width={300} height={300}>
-          <ParticleShader xArray={xArray} yArray={yArray} />
-        </Surface>
+        <canvas
+          id="canvas"
+          width={window.innerWidth}
+          height={window.innerHeight}
+        ></canvas>
       </ErrorBoundary>
     </div>
   );

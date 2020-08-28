@@ -5,13 +5,20 @@ import "./threejs/particles";
 import("../pkg/index.js")
   .then((rustWasm) => {
     console.log(rustWasm);
-    // Get rust's wasm memory
-    // Then, get the pointer to our buffer that is within wasmMemory
+
+    // Initialize arrays in JS
     const rx = new Float32Array(5);
     const ry = new Float32Array(5);
+    const vx = new Float32Array(5);
+    const vy = new Float32Array(5);
+    const ax = new Float32Array(5);
+    const ay = new Float32Array(5);
     const m = new Float32Array(5);
-    rustWasm.set_rx(rx);
-    rustWasm.set_ry(ry);
+
+    // Assign the rust simulation's pointers to point to these arrays
+    rustWasm.init_simulation(rx, ry, vx, vy, ax, ay, m);
+
+    console.log("rx", rx);
 
     ReactDOM.render(
       React.createElement(Root, {}),

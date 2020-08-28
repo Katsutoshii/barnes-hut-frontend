@@ -6,7 +6,7 @@
     "build": "rimraf dist pkg && webpack --mode production",
     "start:server": "rimraf dist pkg && webpack-dev-server --open -d --mode development --watch",
     "start": "npm run start:server",
-    "test": "cargo test && wasm-pack test --headless"
+    "test": "cargo test; wasm-pack test --headless"
   },
   "devDependencies": {
     "@babel/cli": "^7.10.5",

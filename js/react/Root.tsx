@@ -11,7 +11,7 @@ export default function Root(props: Props) {
 
   return (
     <div>
-      <ParticleView xArray={xArray} yArray={yArray} />
+      <ParticleView />
     </div>
   );
 }

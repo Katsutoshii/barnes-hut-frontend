@@ -1,9 +1,7 @@
-precision highp float;
-varying vec2 uv;
-#define NUMMAX 1000000
-uniform float xArray[NUMMAX];
-uniform float yArray[NUMMAX];
+precision mediump float;
+varying vec3 vColor;
+uniform vec2 res;
 
-void main(){
-    gl_FragColor=xArray*vec4(uv.x,uv.y,1.,1.);
+void main(void) {
+    gl_FragColor = vec4(1,1,1, 1.0);
 }

@@ -1,5 +1,6 @@
 import ReactDOM from "react-dom";
 import Root from "./react/Root";
+// import "./shaders/index";
 
 import("../pkg/index.js")
   .then((rustWasm) => {
@@ -13,15 +14,12 @@ import("../pkg/index.js")
     rustWasm.set_ry(ry);
 
     ReactDOM.render(
-      React.createElement(
-        Root,
-        // shallow copy the part of the memory containing the array
-        {
-          xArray: rx,
-          yArray: ry,
-        }
-      ),
+      React.createElement(Root, {
+        // TODO: pass in rust props
+      }),
       document.getElementById("root")
     );
+    // TODO: Call rust to update
+    window.requestAnimationFrame(function (timestep) {});
   })
   .catch(console.error);

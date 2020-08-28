@@ -93,6 +93,7 @@
     }
 
     // Set color, size, and rotation
+    // TODO: set size from rust https://discourse.threejs.org/t/instancing-point-cloud/12280
     color = [1, 1, 0.5];
     size = 1;
     material = new THREE.PointsMaterial({
@@ -166,7 +167,7 @@
   //   update and render update
   function render() {
     // TODO: Change particle positions here
-
+    // https://threejs.org/docs/#manual/en/introduction/How-to-update-things
     // Change color with time
     var time = Date.now() * 0.00005;
     h = ((360 * (color[0] + time)) % 360) / 360;

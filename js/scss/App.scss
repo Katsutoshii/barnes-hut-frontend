@@ -1,8 +1,22 @@
-body {
-  background: grey;
+$font-color: white;
+
+@mixin absolute() {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
 
-.container {
-  width: 50vw;
-  height: 50vh;
+body {
+  background: black;
+  color: $font-color;
+}
+
+#root {
+  @include absolute();
+  pointer-events: none;
+}
+
+.header {
 }

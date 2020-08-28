@@ -1,6 +1,6 @@
 import ReactDOM from "react-dom";
 import Root from "./react/Root";
-// import "./shaders/index";
+import "./threejs/particles";
 
 import("../pkg/index.js")
   .then((rustWasm) => {
@@ -14,12 +14,8 @@ import("../pkg/index.js")
     rustWasm.set_ry(ry);
 
     ReactDOM.render(
-      React.createElement(Root, {
-        // TODO: pass in rust props
-      }),
+      React.createElement(Root, {}),
       document.getElementById("root")
     );
-    // TODO: Call rust to update
-    window.requestAnimationFrame(function (timestep) {});
   })
   .catch(console.error);

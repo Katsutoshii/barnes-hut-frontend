@@ -7,13 +7,9 @@ exports["default"] = Root;
 
 require("../scss/App.scss");
 
-var _ParticleView = _interopRequireDefault(require("./main/ParticleView"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
 function Root(props) {
-  var xArray = props.xArray,
-      yArray = props.yArray;
-  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(_ParticleView["default"], null));
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h1", {
+    className: "header"
+  }, "Hi I'm a point cloud! Because I'm a point cloud, I think about Jojo's bum. Watashi mo, Pointu cloudu mo, jojo's bum ga thinku boutu a des."));
 }
 //# sourceMappingURL=Root.js.map

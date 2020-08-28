@@ -36,13 +36,13 @@ pub static mut SIMULATION: NBodySimulation2D = NBodySimulation2D {
 
 impl NBodySimulation2D {
     pub fn set(&mut self, i: usize, body: &Body2D) {
-        // self.m[i] = body.m;
-        // self.rx[i] = body.rx;
-        // self.ry[i] = body.ry;
-        // self.vx[i] = body.vx;
-        // self.vy[i] = body.vy;
-        // self.ax[i] = 0.;
-        // self.ay[i] = 0.;
+        self.m[i] = body.m;
+        self.rx[i] = body.rx;
+        self.ry[i] = body.ry;
+        self.vx[i] = body.vx;
+        self.vy[i] = body.vy;
+        self.ax[i] = 0.;
+        self.ay[i] = 0.;
     }
 
     pub fn integrate(&mut self, dt: f32) {

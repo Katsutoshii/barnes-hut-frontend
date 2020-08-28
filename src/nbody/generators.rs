@@ -1,5 +1,5 @@
 use rand_distr::{Uniform, Distribution, Normal};
-use crate::nbody::simulation::{NBodySimulation2D, HEIGHT, WIDTH};
+use crate::nbody::simulation::{NBodySimulation2D, HEIGHT, WIDTH, MIN_DIST_SQRD};
 use crate::nbody::bodies::{Body2D};
 use std::f32::{consts::PI};
 
@@ -8,9 +8,11 @@ pub const CENTER: Body2D = Body2D {
     ry: (HEIGHT / 2) as f32,
     vx: 0.,
     vy: 0.,
-    m: 4e6
+    m: 5e6
 };
 
+/// Generates a satelite body for the galaxy.
+/// The velocity vector is perpendicular to the radius and scales with r^-2.
 pub fn generate_satelite() -> Body2D {
     // Generate a randon polar coordinate and mass
     let mut rng = rand::thread_rng();
@@ -21,7 +23,7 @@ pub fn generate_satelite() -> Body2D {
     let theta: f32 = uniform.sample(&mut rng);
     let mut r: f32 = r_norm.sample(&mut rng);
     let mut m: f32 = m_norm.sample(&mut rng);
-    r = f32::min(30. * r.abs() + 20., WIDTH as f32);
+    r = f32::min(30. * r.abs() + 20., 250.);
     m = f32::min(m.abs() + 1e-2, 3.);
 
     // Calculate position
@@ -32,7 +34,7 @@ pub fn generate_satelite() -> Body2D {
     let dx: f32 = CENTER.rx - rx;
     let dy: f32 = CENTER.ry - ry;
     let d: f32 = (dx * dx + dy * dy).sqrt();
-    let s: f32 = 1e-2 * (CENTER.m).sqrt() / r;
+    let s: f32 = 1.00025e0 * (CENTER.m).sqrt() / r / r;
 
     let vx: f32 = s * dy / d;
     let vy: f32 = s * -dx / d;
@@ -50,9 +52,19 @@ pub fn generate_galaxy(sim: &mut NBodySimulation2D) {
     }
 }
 
+/// Keeps everything within the bounds of the simulation
 pub fn maintain_bounds(sim: &mut NBodySimulation2D) {
-    for i in 0..sim.n {
-        if sim.rx[i] < 0. || sim.rx[i] > WIDTH as f32 || sim.ry[i] < 0. || sim.ry[i] > HEIGHT as f32 {
+    // Check bounds for all except center (at index 0)
+    for i in 1..sim.n {
+        let dx: f32 = CENTER.rx - sim.rx[i];
+        let dy: f32 = CENTER.ry - sim.ry[i];
+        let d_sqrd: f32 = dx * dx + dy * dy;
+        if sim.rx[i] < 0. ||
+            sim.rx[i] > WIDTH as f32 ||
+            sim.ry[i] < 0. ||
+            sim.ry[i] > HEIGHT as f32 ||
+            d_sqrd < MIN_DIST_SQRD {
+
             sim.set(i, &generate_satelite());
         }
     }

@@ -5,7 +5,7 @@ use web_sys::console;
 
 pub mod nbody;
 
-use nbody::{SIMULATION, NUM_PARTICLES, generate_galaxy};
+use nbody::{SIMULATION, NUM_PARTICLES, generate_galaxy, nbody_direct_2d};
 
 // When the `wee_alloc` feature is enabled, this uses `wee_alloc` as the global
 // allocator.
@@ -15,7 +15,6 @@ use nbody::{SIMULATION, NUM_PARTICLES, generate_galaxy};
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
-// Function to return wasm memory buffer
 #[wasm_bindgen]
 pub fn get_wasm_memory() -> Result<JsValue, JsValue> {
     match wasm_bindgen::memory().dyn_into::<WebAssembly::Memory>() {
@@ -24,25 +23,57 @@ pub fn get_wasm_memory() -> Result<JsValue, JsValue> {
     }
 }
 
-// Function to return a pointer to X_POSITIONS
-#[wasm_bindgen]
-pub fn set_rx(rx: &mut [f32]) {
+/// Bind the pointers from javascript (ptr to 7 (arrays) * MAX_PARTICLES * 4 bytes of memory)
+fn bind_sim(
+        rx: &mut [f32],
+        ry: &mut [f32],
+        vx: &mut [f32],
+        vy: &mut [f32],
+        ax: &mut [f32],
+        ay: &mut [f32],
+        m: &mut [f32]) {
     unsafe {
         SIMULATION.rx = Vec::from_raw_parts(rx.as_mut_ptr(), NUM_PARTICLES, NUM_PARTICLES);
-        for i in 0..SIMULATION.n {
-            SIMULATION.rx[i] = 1.;
-        }
+        SIMULATION.ry = Vec::from_raw_parts(ry.as_mut_ptr(), NUM_PARTICLES, NUM_PARTICLES);
+        SIMULATION.vx = Vec::from_raw_parts(vx.as_mut_ptr(), NUM_PARTICLES, NUM_PARTICLES);
+        SIMULATION.vy = Vec::from_raw_parts(vy.as_mut_ptr(), NUM_PARTICLES, NUM_PARTICLES);
+        SIMULATION.ax = Vec::from_raw_parts(ax.as_mut_ptr(), NUM_PARTICLES, NUM_PARTICLES);
+        SIMULATION.ay = Vec::from_raw_parts(ay.as_mut_ptr(), NUM_PARTICLES, NUM_PARTICLES);
+        SIMULATION.m = Vec::from_raw_parts(m.as_mut_ptr(), NUM_PARTICLES, NUM_PARTICLES);
     }
 }
 
-// Function to return a pointer to X_POSITIONS
+/// Initializes the simulation.
+/// Binds JS array pointer to simulation, then runs `generate_galaxy`.
 #[wasm_bindgen]
-pub fn set_ry(ry: &mut [f32]) {
+pub fn init_simulation(
+        rx: &mut [f32],
+        ry: &mut [f32],
+        vx: &mut [f32],
+        vy: &mut [f32],
+        ax: &mut [f32],
+        ay: &mut [f32],
+        m: &mut [f32]) {
     unsafe {
-        SIMULATION.ry = Vec::from_raw_parts(ry.as_mut_ptr(), NUM_PARTICLES, NUM_PARTICLES);
-        for i in 0..SIMULATION.n {
-            SIMULATION.ry[i] = 1.;
-        }
+        bind_sim(rx, ry, vx, vy, ax, ay, m);
+        generate_galaxy(&mut SIMULATION);
+    }
+}
+
+/// Runs a timestep of the simulation
+#[wasm_bindgen]
+pub fn run_timestep(
+    rx: &mut [f32],
+    ry: &mut [f32],
+    vx: &mut [f32],
+    vy: &mut [f32],
+    ax: &mut [f32],
+    ay: &mut [f32],
+    m: &mut [f32]
+) {
+    unsafe {
+        bind_sim(rx, ry, vx, vy, ax, ay, m);
+        nbody_direct_2d(&mut SIMULATION, 0.1)
     }
 }
 
@@ -53,9 +84,7 @@ pub fn main_js() -> Result<(), JsValue> {
     // It's disabled in release mode so it doesn't bloat up the file size.
     #[cfg(debug_assertions)]
     console_error_panic_hook::set_once();
-    // unsafe {
-    //     generate_galaxy(&mut SIMULATION);
-    // }
+    
 
     // Your code goes here!
     console::log_1(&JsValue::from_str("Bye world!"));

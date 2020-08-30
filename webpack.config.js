@@ -11,7 +11,7 @@ module.exports = (_, { mode }) => ({
     index: "./index.js",
   },
   watchOptions: {
-    poll: true,
+    poll: 1000,
   },
   output: {
     path: dist,

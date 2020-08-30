@@ -7,9 +7,7 @@ const dist = path.resolve(__dirname, "dist");
 
 module.exports = (_, { mode }) => ({
   context: path.join(__dirname, "js"),
-  entry: {
-    index: "./index.js",
-  },
+  entry: "./index.js",
   output: {
     path: dist,
     filename: "[name].js",

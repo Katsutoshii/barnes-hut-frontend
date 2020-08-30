@@ -2,7 +2,7 @@ import ReactDOM from "react-dom";
 import Root from "./react/Root";
 import "./threejs/particles";
 
-const NUM_PARTICLES = 5;
+const NUM_PARTICLES = 10;
 const DIMENSION = 3;
 
 import("../pkg/index.js")
@@ -17,7 +17,7 @@ import("../pkg/index.js")
     const m = new Float32Array(NUM_PARTICLES);
 
     // Assign the rust simulation's pointers to point to these arrays
-    rustWasm.init_simulation(r, v, a, m);
+    rustWasm.init_simulation(NUM_PARTICLES, r, v, a, m);
 
     console.log("r", r);
 

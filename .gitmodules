@@ -1,0 +1,3 @@
+[submodule "barnes-hut-rs"]
+	path = barnes-hut-rs
+	url = https://github.com/Katsutoshii/barnes-hut-rs

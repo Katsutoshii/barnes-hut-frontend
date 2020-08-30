@@ -6,8 +6,9 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const dist = path.resolve(__dirname, "dist");
 
 module.exports = (_, { mode }) => ({
+  context: path.join(__dirname, "js"),
   entry: {
-    index: "./js/index.js",
+    index: "./index.js",
   },
   output: {
     path: dist,
@@ -23,7 +24,9 @@ module.exports = (_, { mode }) => ({
       {
         test: /\.s?css$/i,
         use: [
-          mode === "production" ? MiniCssExtractPlugin.loader : "style-loader",
+          mode === "production"
+            ? MiniCssExtractPlugin.loader
+            : "style-loader",
           "css-loader",
           "sass-loader",
         ],

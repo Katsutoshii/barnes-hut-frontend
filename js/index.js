@@ -8,6 +8,7 @@ const DIMENSION = 3;
 import("../pkg/index.js")
   .then((rustWasm) => {
     console.log(rustWasm);
+    console.log("TessBot");
 
     // Initialize arrays in JS
     const r = new Float32Array(NUM_PARTICLES * DIMENSION);

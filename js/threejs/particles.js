@@ -9,7 +9,7 @@ let rustWasm;
 /* Constants begin ------------------------------- */
 // How many stars that will be simulated?
 export const DEF_NUM_SIMULATE = 5000;
-export const MAX_NUM_SIMULATE = 500000;
+export const MAX_NUM_SIMULATE = 10000;
 // How many background stars, not a part of the simulation?
 export const DEF_NUM_STARS = 10000;
 export const MAX_NUM_STARS = 500000;
@@ -27,10 +27,10 @@ let starPoints,
   starC = [1, 1, 0.5];
 let simPoints;
 // Initialize arrays in JS
-const r = new Float32Array(MAX_NUM_SIMULATE * DIMENSION);
-const v = new Float32Array(MAX_NUM_SIMULATE * DIMENSION);
-const a = new Float32Array(MAX_NUM_SIMULATE * DIMENSION);
-const m = new Float32Array(MAX_NUM_SIMULATE);
+let r = new Float32Array();
+let v = new Float32Array();
+let a = new Float32Array();
+let m = new Float32Array();
 const c = new Float32Array(MAX_NUM_SIMULATE * 3);
 /* Point cloud variables end ------------------------- */
 
@@ -47,7 +47,12 @@ let paused = DEF_PAUSE;
 export function Init(wasm) {
   rustWasm = wasm;
   // Tell rustWasm to init simulation
-  // rustWasm.init_simulation(Number(DEF_NUM_SIMULATE), r, v, a, m);
+  rustWasm.init_simulation(Number(DEF_NUM_SIMULATE));
+  
+  r = rustWasm.get_r();
+  v = rustWasm.get_v();
+  a = rustWasm.get_a();
+  m = rustWasm.get_m();
 
   // Set up ThreeJS scene, camera
   const HEIGHT = window.innerHeight,
@@ -151,7 +156,8 @@ export function Init(wasm) {
 // update renderer with new parameters
 export function UpdateSimCount(simCount) {
   // Assign the rust simulation's pointers to point to these arrays
-  rustWasm.init_simulation(Number(simCount), r, v, a, m);
+  rustWasm.init_simulation(Number(simCount));
+  console.log("update sim count done.", r);
   simPoints.geometry.setDrawRange(0, simCount);
 }
 
@@ -170,7 +176,7 @@ function animate() {
   requestAnimationFrame(animate);
 
   if (updateControls) controls.update();
-  if (!paused) rustWasm.run_timestep(r, v, a, m);
+  if (!paused) rustWasm.run_timestep();
 
   render();
   // update Stats

@@ -143,7 +143,7 @@
       console.log(fps);
       updateControls = fps > 30;
       controls.autoRotate = updateControls;
-      controls.autoRotateSpeed = 0.1;
+      controls.autoRotateSpeed = 0.015;
     });
 
     // set where the camera position is; where the controls should orbit around

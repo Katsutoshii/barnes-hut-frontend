@@ -8,8 +8,9 @@ let rustWasm;
 
 /* Constants begin ------------------------------- */
 // How many stars that will be simulated?
-export const DEF_NUM_SIMULATE = 5000;
+export const DEF_NUM_SIMULATE = 1000;
 export const MAX_NUM_SIMULATE = 10000;
+export const MAX_NUM_DIRECT_SIMULATE = 2000;
 // How many background stars, not a part of the simulation?
 export const DEF_NUM_STARS = 10000;
 export const MAX_NUM_STARS = 500000;

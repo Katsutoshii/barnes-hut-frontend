@@ -3,21 +3,21 @@
 
 import Vertex from "./particles.vert";
 import Fragment from "./particles.frag";
+import * as THREE from "three";
+import Stats from "stats.js";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import {
+  DEF_NUM_SIMULATE,
+  DEF_NUM_STARS,
+  DEF_OPTIMIZATION,
+  DEF_PAUSE,
+  DIMENSION,
+  MAX_NUM_SIMULATE,
+  MAX_NUM_STARS,
+  Optimization,
+} from "../common";
 
 let rustWasm;
-
-/* Constants begin ------------------------------- */
-// How many stars that will be simulated?
-export const DEF_NUM_SIMULATE = 1000;
-export const MAX_NUM_SIMULATE = 10000;
-export const MAX_NUM_DIRECT_SIMULATE = 2000;
-// How many background stars, not a part of the simulation?
-export const DEF_NUM_STARS = 10000;
-export const MAX_NUM_STARS = 500000;
-export const DIMENSION = 3;
-// Other controls
-export const DEF_PAUSE = true;
-/* Constants end -------------------------------- */
 
 /* Point cloud variables begin -------------------------
  r = position, m = mass, c = color
@@ -43,13 +43,14 @@ let stats, controls, updateControls;
 let windowHalfX, windowHalfY;
 // For control
 let paused = DEF_PAUSE;
+let optimization = DEF_OPTIMIZATION;
 
 // Initialize renderer
 export function Init(wasm) {
   rustWasm = wasm;
   // Tell rustWasm to init simulation
   rustWasm.init_simulation(Number(DEF_NUM_SIMULATE));
-  
+
   r = rustWasm.get_r();
   v = rustWasm.get_v();
   a = rustWasm.get_a();
@@ -83,7 +84,7 @@ export function Init(wasm) {
 
   const container = document.createElement("div");
   document.body.appendChild(container);
-  document.body.style.margin = 0;
+  document.body.style.margin = "0";
   document.body.style.overflow = "hidden";
 
   // Stars begin ----------------------
@@ -113,15 +114,16 @@ export function Init(wasm) {
   container.appendChild(renderer.domElement); /* Add to page	*/
 
   // Add stats so we can see FPS
-  stats = new Stats();
+  stats = Stats();
   stats.domElement.style.position = "absolute";
   stats.domElement.style.top = "0px";
+  stats.domElement.style.left = "initial";
   stats.domElement.style.right = "0px";
   container.appendChild(stats.domElement);
 
   // Add mouse/mobile controls
-  controls = new THREE.OrbitControls(camera, renderer.domElement);
-  controls.target.z = cameraZ;
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.target.set(0, 0, 0);
 
   //   workaround for https://stackoverflow.com/questions/5531100/javascript-stats-js-hi-res-stats-from-mrdoob-how-to-get-current-fps
   const getFPS = () =>
@@ -142,11 +144,11 @@ export function Init(wasm) {
     console.log(fps);
     updateControls = fps > 30;
     controls.autoRotate = updateControls;
-    controls.autoRotateSpeed = 0.015;
+    controls.autoRotateSpeed = 0.2;
   });
 
   // set where the camera position is; where the controls should orbit around
-  camera.position.set(0, 20, 100);
+  camera.position.set(0, 0, -cameraZ / 5);
 
   /* Event Listeners */
   window.addEventListener("resize", onWindowResize, false);
@@ -172,12 +174,23 @@ export function UpdatePause(p) {
   paused = p;
 }
 
+export function UpdateOptimization(o) {
+  optimization = o;
+}
+
 //   update loop
 function animate() {
   requestAnimationFrame(animate);
 
   if (updateControls) controls.update();
-  if (!paused) rustWasm.run_timestep();
+  if (!paused) {
+    console.log("run timestep");
+    if (optimization == Optimization.BarnesHut) {
+      rustWasm.run_timestep_barnes_hut(0.5);
+    } else {
+      rustWasm.run_timestep(0.5);
+    }
+  }
 
   render();
   // update Stats

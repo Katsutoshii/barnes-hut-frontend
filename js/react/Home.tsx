@@ -3,27 +3,35 @@ import {
   Init,
   UpdateSimCount,
   UpdateStarCount,
+  UpdatePause,
+  UpdateOptimization,
+} from "../threejs/particles";
+import {
   DEF_NUM_STARS,
   DEF_NUM_SIMULATE,
   MAX_NUM_SIMULATE,
   MAX_NUM_STARS,
   DEF_PAUSE,
-  UpdatePause,
-} from "../threejs/particles";
-import { useState, useEffect } from "react";
+  DEF_OPTIMIZATION,
+  Optimization,
+} from "../common";
+import React, { useState, useEffect } from "react";
 import Slider from "./Slider";
-import PauseButton from "./PauseButton";
-import ErrorBoundary from "./ErrorBoundary";
+import Button from "./Button";
+import ButtonGroup from "./ButtonGroup";
 
 type Props = { rustWasm };
 
 export default function Home(props: Props) {
   const { rustWasm } = props;
-  const [pauseSim, setPause] = useState(DEF_PAUSE);
+  /* How many stars to simulate physics on */
   const [simulatedCount, setSimCount] = useState(DEF_NUM_SIMULATE);
-
   /* How many stars not included in simulation */
   const [starCount, setStarCount] = useState(DEF_NUM_STARS);
+
+  /* Other controls */
+  const [pauseSim, setPause] = useState(DEF_PAUSE);
+  const [opt, setOpt] = useState<Optimization>(DEF_OPTIMIZATION);
 
   // On mount
   useEffect(() => {
@@ -33,6 +41,10 @@ export default function Home(props: Props) {
   useEffect(() => {
     UpdatePause(pauseSim);
   }, [pauseSim]);
+
+  useEffect(() => {
+    UpdateOptimization(opt);
+  }, [opt]);
 
   useEffect(() => {
     UpdateSimCount(simulatedCount);
@@ -50,7 +62,19 @@ export default function Home(props: Props) {
         boutu a des.
       </h1>
       <form className="controls-container">
-        <PauseButton paused={pauseSim} OnToggle={setPause} />
+        <Button
+          onClick={() => {
+            setPause(!pauseSim);
+          }}
+        >
+          {pauseSim ? "Play" : "Pause"}
+        </Button>
+        <ButtonGroup value={opt} onClick={(o) => setOpt(o)}>
+          <Button groupLabel={Optimization.BarnesHut}>
+            Barnes Hut
+          </Button>
+          <Button groupLabel={Optimization.Regular}>Regular</Button>
+        </ButtonGroup>
         <Slider
           min={0}
           max={MAX_NUM_SIMULATE}

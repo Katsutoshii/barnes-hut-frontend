@@ -1,0 +1,18 @@
+$font-color: white;
+$black: black;
+$dark: rgb(86, 82, 82);
+
+@mixin absolute() {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+@mixin column-grid($size, $gap) {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: $size;
+  column-gap: $gap;
+}

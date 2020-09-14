@@ -1,10 +1,13 @@
 {
-  "author": "You <you@example.com>",
-  "name": "rust-webpack-template",
+  "contributors": [
+    "Angela He <heangela.arts@gmail.com>",
+    "Josiah Putman <joshikatsu@gmail.com>"
+  ],
+  "name": "barnes-hut-frontend",
   "version": "0.1.0",
   "scripts": {
-    "build": "rimraf dist pkg && webpack --mode production",
-    "start:server": "rimraf dist pkg && webpack-dev-server --open -d --mode development --watch",
+    "build": "rimraf dist pkg && webpack -p",
+    "start:server": "rimraf dist pkg && webpack-dev-server --open -d --watch",
     "start": "npm run start:server",
     "test": "cargo test; wasm-pack test --headless"
   },
@@ -53,7 +56,9 @@
     "gl-react-dom": "^4.0.1",
     "glslify-loader": "^2.0.0",
     "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "react-dom": "^16.13.1",
+    "stats.js": "^0.17.0",
+    "three": "^0.120.1"
   },
   "repository": {
     "type": "git",

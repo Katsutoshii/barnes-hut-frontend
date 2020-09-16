@@ -56,6 +56,14 @@ export function init(wasm) {
   rustWasm.init_simulation(Number(DEF_NUM_SIMULATE));
 
   r = rustWasm.get_r();
+
+  // assign random Z to simulate '3D' effect
+  for (let i = 2; i < r.length; i += 3) {
+    r[i] = Math.random() * 2000 - 1000;
+  }
+
+  console.log("init", r);
+
   v = rustWasm.get_v();
   a = rustWasm.get_a();
   m = rustWasm.get_m();
@@ -199,7 +207,6 @@ export function updateSimCount(simCount) {
   simPoints.geometry.setDrawRange(0, simCount);
   updateSimPos();
   updateSimSize();
-  console.log(r, m);
 }
 
 // update renderer with new parameters
@@ -226,6 +233,7 @@ export function updateOptimization(o) {
 function updateSimPos() {
   if (simPoints) {
     simPoints.geometry.getAttribute("position").array = r;
+    console.log("updateSimPos", r);
     simPoints.geometry.attributes.position.needsUpdate = true;
   }
 }
@@ -257,6 +265,8 @@ function initUniformPoints(count, positions, size, color) {
     "position",
     new THREE.Float32BufferAttribute(positions, DIMENSION)
   );
+  console.log("initUniformPoints", r);
+
   geometry.setAttribute(
     "size",
     new THREE.Float32BufferAttribute(size, 1)

@@ -1,14 +1,41 @@
 @import "Vars.scss";
 @import "Inputs.scss";
 
+html,
 body {
-  background: black;
-  color: $font-color;
-  margin: 0;
-  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
 }
 
 #root {
   @include absolute();
   pointer-events: none;
+}
+
+body {
+  color: $font-color;
+  margin: 0;
+  overflow: hidden;
+
+  background: linear-gradient(
+    352deg,
+    #0b0810,
+    #090f36,
+    #210f28,
+    #21183c
+  );
+  background-size: 300% 300%;
+  animation: moveBg 100s ease infinite;
+}
+
+@keyframes moveBg {
+  0% {
+    background-position: 45% 0%;
+  }
+  50% {
+    background-position: 56% 100%;
+  }
+  100% {
+    background-position: 45% 0%;
+  }
 }

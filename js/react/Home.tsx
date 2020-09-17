@@ -1,19 +1,21 @@
 import "../scss/App.scss";
 import {
-  Init,
-  UpdateSimCount,
-  UpdateStarCount,
-  UpdatePause,
-  UpdateOptimization,
+  init,
+  updateSimCount,
+  updateStarCount,
+  updatePause,
+  updateOptimization,
 } from "../threejs/particles";
 import {
   DEF_NUM_STARS,
   DEF_NUM_SIMULATE,
-  MAX_NUM_SIMULATE,
+  MAX_NUM_DIRECT_SIMULATE,
+  MAX_NUM_BARNES_SIMULATE,
   MAX_NUM_STARS,
   DEF_PAUSE,
   DEF_OPTIMIZATION,
   Optimization,
+  clamp,
 } from "../common";
 import React, { useState, useEffect } from "react";
 import Slider from "./Slider";
@@ -35,32 +37,28 @@ export default function Home(props: Props) {
 
   // On mount
   useEffect(() => {
-    Init(rustWasm);
+    init(rustWasm);
   }, []);
 
   useEffect(() => {
-    UpdatePause(pauseSim);
+    updatePause(pauseSim);
   }, [pauseSim]);
 
   useEffect(() => {
-    UpdateOptimization(opt);
+    updateOptimization(opt);
   }, [opt]);
 
   useEffect(() => {
-    UpdateSimCount(simulatedCount);
+    updateSimCount(simulatedCount);
   }, [simulatedCount]);
 
   useEffect(() => {
-    UpdateStarCount(starCount);
+    updateStarCount(starCount);
   }, [starCount]);
 
   return (
     <>
-      <h1 className="header">
-        Hi I'm a point cloud! Because I'm a point cloud, I think about
-        Jojo's bum. Watashi mo, Pointu cloudu mo, jojo's bum ga thinku
-        boutu a des.
-      </h1>
+      <h1 className="header">Click to create black hole</h1>
       <form className="controls-container">
         <Button
           onClick={() => {
@@ -69,15 +67,36 @@ export default function Home(props: Props) {
         >
           {pauseSim ? "Play" : "Pause"}
         </Button>
-        <ButtonGroup value={opt} onClick={(o) => setOpt(o)}>
+        <ButtonGroup
+          value={opt}
+          onClick={(o) => {
+            setOpt(o);
+            switch (o) {
+              case Optimization.BarnesHut:
+                setSimCount(
+                  clamp(simulatedCount, 0, MAX_NUM_BARNES_SIMULATE)
+                );
+                break;
+              case Optimization.Direct:
+                setSimCount(
+                  clamp(simulatedCount, 0, MAX_NUM_DIRECT_SIMULATE)
+                );
+                break;
+            }
+          }}
+        >
           <Button groupLabel={Optimization.BarnesHut}>
             Barnes Hut
           </Button>
-          <Button groupLabel={Optimization.Regular}>Regular</Button>
+          <Button groupLabel={Optimization.Direct}>Direct</Button>
         </ButtonGroup>
         <Slider
           min={0}
-          max={MAX_NUM_SIMULATE}
+          max={
+            opt == Optimization.BarnesHut
+              ? MAX_NUM_BARNES_SIMULATE
+              : MAX_NUM_DIRECT_SIMULATE
+          }
           value={simulatedCount}
           onChange={setSimCount}
           label="Particles"

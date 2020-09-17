@@ -1,13 +1,13 @@
 attribute float size;
 
-varying vec3 vColor;
+varying float vSize;
 
 void main(){
-    vColor=color;
-    
     vec4 mvPosition=modelViewMatrix*vec4(position,1.);
     
-    gl_PointSize=min(size,100.)*(300./-mvPosition.z);
+    gl_PointSize=size*(300./-mvPosition.z);
     
     gl_Position=projectionMatrix*mvPosition;
+    
+    vSize=size;
 }

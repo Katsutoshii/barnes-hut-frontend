@@ -1,12 +1,13 @@
 // Inspired from the following https://codepen.io/seanseansean/pen/EaBZEY
 "use strict";
 
-import Vertex from "./particles.vert";
-import Fragment from "./particles.frag";
-import StarsFragment from "./stars.frag";
-import StarsVert from "./stars.vert";
+import Vertex from "./shaders/particles.vert";
+import Fragment from "./shaders/particles.frag";
+import HaloFragment from "./shaders/halo.frag";
+import HaloVert from "./shaders/halo.vert";
+import StarsFragment from "./shaders/stars.frag";
+import StarsVert from "./shaders/stars.vert";
 import * as THREE from "three";
-import Stats from "stats.js";
 import { OrbitControls } from "./OrbitControls";
 import {
   DEF_NUM_SIMULATE,
@@ -28,17 +29,22 @@ let starPoints,
   starC = new THREE.Color(0x3535aa);
 
 let simPoints;
+
+let backdrop;
 // Initialize simulation arrays in JS
 let r, v, a, m;
 const c = new Float32Array(MAX_NUM_SIMULATE * 3);
+// number of black holes
+let numBH = 0;
+
 /* Point cloud variables end ------------------------- */
 
 // Other global variables
 let scene, camera, renderer, raycaster;
-// stats
-let stats, controls, updateControls;
+let controls, updateControls;
 // For window resize
 let windowHalfX, windowHalfY;
+let startTime;
 // For control
 let paused = DEF_PAUSE;
 let optimization = DEF_OPTIMIZATION;
@@ -62,8 +68,6 @@ export function init(wasm) {
     r[i] = Math.random() * 2000 - 1000;
   }
 
-  console.log("init", r);
-
   v = rustWasm.get_v();
   a = rustWasm.get_a();
   m = rustWasm.get_m();
@@ -79,9 +83,7 @@ export function init(wasm) {
     nearPlane = 1,
     farPlane = 1000;
 
-  const cameraZ = farPlane / 6,
-    fogHex = 0x000000 /* Black	*/,
-    fogDensity = 0.0007; /* Not dense	*/
+  const cameraZ = farPlane / 4;
 
   camera = new THREE.PerspectiveCamera(
     fieldOfView,
@@ -91,37 +93,93 @@ export function init(wasm) {
   );
 
   scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(fogHex, fogDensity);
 
   const container = document.createElement("div");
   document.body.appendChild(container);
 
   // Stars begin ----------------------
   const starR = new Float32Array(MAX_NUM_STARS * DIMENSION);
-  const starM = new Float32Array(MAX_NUM_STARS * 1);
+  const starM = new Float32Array(MAX_NUM_STARS);
+  const starExp = new Float32Array(MAX_NUM_STARS);
+  const STAR_WIDTH = WIDTH * 0.5;
 
-  // [1, 1, 0.5]
   for (let i = 0; i < MAX_NUM_STARS; i++) {
-    starR[i] = Math.random() * 2000 - 1000;
-    starR[i + 1] = Math.random() * 2000 - 1000;
-    starR[i + 2] = Math.random() * 2000 - 1000;
+    starR[i * 3] = Math.random() * STAR_WIDTH - STAR_WIDTH / 2;
+    starR[i * 3 + 1] = Math.random() * STAR_WIDTH - STAR_WIDTH / 2;
+    starR[i * 3 + 2] = Math.random() * STAR_WIDTH * 2 - STAR_WIDTH;
 
+    let increment;
+    let random = Math.random();
+    // randomize
+    if (random > 0.5) {
+      // circle
+      increment = 1.1;
+      starExp[i] = 2;
+    } else if (random > 0.25) {
+      // star
+      increment = 1.7;
+      starExp[i] = 0.75;
+    } else {
+      // pointy star
+      increment = 1.75;
+      starExp[i] = 0.5;
+    }
     // randomize mass
-    starM[i] = (Math.random() + 1.5) * 2;
+    starM[i] = (Math.random() + increment) * increment * 1.5;
   }
 
-  starPoints = initUniformPoints(DEF_NUM_STARS, starR, starM, starC);
-
-  starPoints.rotation.x = Math.random() * 6;
-  starPoints.rotation.y = Math.random() * 6;
-  starPoints.rotation.z = Math.random() * 6;
+  starPoints = initUniformPoints(
+    DEF_NUM_STARS,
+    starR,
+    starM,
+    starC,
+    starExp
+  );
   // Stars end ----------------------
 
+  // skybox
+  var geometry = new THREE.PlaneGeometry(WIDTH * 1.5, HEIGHT * 1.5);
+  var texture = new THREE.TextureLoader().load(
+    "graphics/stars copy.png",
+    function (texture) {
+      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+      // repeat
+      texture.repeat.set(3.5, 3.5);
+    }
+  );
+  var material = new THREE.MeshBasicMaterial({
+    map: texture,
+    transparent: true,
+    color: starC,
+  });
+  backdrop = new THREE.Mesh(geometry, material);
+  backdrop.position.z = -farPlane / 2;
+  scene.add(backdrop);
+
   // Simulated particles begin ----------------------
+  // halo
+  const glowRadius = 300;
+  const glowMaterial = new THREE.RawShaderMaterial({
+    uniforms: {
+      max: { value: glowRadius / 2 },
+    },
+    vertexShader: HaloVert,
+    fragmentShader: HaloFragment,
+
+    alphaTest: 0.5,
+    transparent: true,
+    depthWrite: false,
+  });
+  const glow = new THREE.Mesh(
+    new THREE.PlaneBufferGeometry(glowRadius, glowRadius),
+    glowMaterial
+  );
+  glow.position.z = -10;
+  scene.add(glow);
+  // actual points
   c.fill(1);
-  updateBlackHoles();
+  tryUpdateBlackHoles();
   simPoints = initPoints(DEF_NUM_SIMULATE, r, m, c);
-  simPoints.geometry.computeBoundingSphere();
   // Simulated particles end ----------------------
 
   renderer = new THREE.WebGLRenderer({
@@ -133,38 +191,18 @@ export function init(wasm) {
 
   container.appendChild(renderer.domElement); /* Add to page	*/
 
-  // Add stats so we can see FPS
-  stats = Stats();
-  stats.domElement.style.position = "absolute";
-  stats.domElement.style.top = "0px";
-  stats.domElement.style.left = "initial";
-  stats.domElement.style.right = "0px";
-  container.appendChild(stats.domElement);
-
   // Add mouse/mobile controls
   controls = new OrbitControls(camera, renderer.domElement);
   controls.target.set(0, 0, 0);
-
-  //   workaround for https://stackoverflow.com/questions/5531100/javascript-stats-js-hi-res-stats-from-mrdoob-how-to-get-current-fps
-  const getFPS = () =>
-    new Promise((resolve) =>
-      requestAnimationFrame(() => {
-        const before = Date.now();
-        let fps = 0;
-        requestAnimationFrame((t2) => {
-          const now = Date.now();
-          fps = Math.round(1000 / (now - before));
-          resolve(fps);
-        });
-      })
-    );
-
-  // automatically rotate - if performance hit too hard, disable
-  getFPS().then((fps) => {
-    updateControls = fps > 30;
-    controls.autoRotate = updateControls;
-    controls.autoRotateSpeed = 0.2;
-  });
+  // set controls' limits
+  controls.minDistance = cameraZ * 0.75;
+  controls.maxDistance = cameraZ * 1.5;
+  // vertical rotation
+  controls.minPolarAngle = Math.PI * 0.4; // radians
+  controls.maxPolarAngle = Math.PI * 0.6; // radians
+  // horizontal rotation
+  controls.minAzimuthAngle = -Math.PI * 0.1; // radians
+  controls.maxAzimuthAngle = Math.PI * 0.1; // radians
 
   // set where the camera position is; where the controls should orbit around
   camera.position.set(0, 0, cameraZ);
@@ -196,6 +234,8 @@ export function init(wasm) {
       onClick(event);
     }
   });
+
+  startTime = Date.now();
 
   animate();
 }
@@ -233,7 +273,6 @@ export function updateOptimization(o) {
 function updateSimPos() {
   if (simPoints) {
     simPoints.geometry.getAttribute("position").array = r;
-    console.log("updateSimPos", r);
     simPoints.geometry.attributes.position.needsUpdate = true;
   }
 }
@@ -259,22 +298,24 @@ function updateSimColor() {
 }
 
 // init points where size and color are uniform
-function initUniformPoints(count, positions, size, color) {
+function initUniformPoints(count, positions, size, color, p) {
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute(
     "position",
     new THREE.Float32BufferAttribute(positions, DIMENSION)
   );
-  console.log("initUniformPoints", r);
 
   geometry.setAttribute(
     "size",
     new THREE.Float32BufferAttribute(size, 1)
   );
 
+  geometry.setAttribute("p", new THREE.Float32BufferAttribute(p, 1));
+
   const material = new THREE.ShaderMaterial({
     uniforms: {
       color: { value: color },
+      time: { value: 1.0 },
     },
 
     vertexShader: StarsVert,
@@ -282,6 +323,7 @@ function initUniformPoints(count, positions, size, color) {
 
     blending: THREE.AdditiveBlending,
     alphaTest: 0.5,
+    depthWrite: false,
   });
 
   const points = new THREE.Points(geometry, material);
@@ -315,12 +357,18 @@ function initPoints(count, position, size, colors) {
   );
 
   const material = new THREE.ShaderMaterial({
+    uniforms: {
+      time: { value: 1.0 },
+      height: { value: windowHalfY },
+    },
+
     vertexShader: Vertex,
     fragmentShader: Fragment,
 
-    blending: THREE.AdditiveBlending,
     alphaTest: 0.5,
+    transparent: true,
     vertexColors: true,
+    depthWrite: false,
   });
 
   const points = new THREE.Points(geometry, material);
@@ -335,14 +383,29 @@ function initPoints(count, position, size, colors) {
 When a new black hole is created, array m changes
 init black hole colors and size
 */
-function updateBlackHoles() {
+function tryUpdateBlackHoles() {
   const n = rustWasm.get_num_blackhole();
-  for (let i = 0; i < n; i++) {
-    c[i * 3] = 0.06;
-    c[i * 3 + 1] = 0;
-    c[i * 3 + 2] = 0.07;
+  if (n == numBH) {
+    return;
+  }
+  // if add black hole
+  if (n > numBH) {
+    for (let i = numBH; i < n; i++) {
+      c[i * 3] = 0.07;
+      c[i * 3 + 1] = 0.01;
+      c[i * 3 + 2] = 0.08;
+    }
+  }
+  // if delete black hole
+  if (n < numBH) {
+    for (let i = n; i < numBH; i++) {
+      c[i * 3] = 1;
+      c[i * 3 + 1] = 1;
+      c[i * 3 + 2] = 1;
+    }
   }
 
+  numBH = n;
   updateSimSize();
   updateSimPos();
   updateSimColor();
@@ -355,9 +418,6 @@ function animate() {
   if (updateControls) controls.update();
 
   render();
-
-  // update Stats
-  stats.update();
 }
 
 //   update and render update
@@ -366,8 +426,19 @@ function render() {
 
   changeStarsHue();
 
+  setTime();
+
+  tryUpdateBlackHoles();
+
   // render to WebGLRenderer
   renderer.render(scene, camera);
+}
+
+function setTime() {
+  let elapsedMilliseconds = Date.now() - startTime;
+  simPoints.material.uniforms.time.value = elapsedMilliseconds / 4000;
+  starPoints.material.uniforms.time.value =
+    elapsedMilliseconds / 4000;
 }
 
 // Change star color with time
@@ -375,6 +446,7 @@ function changeStarsHue() {
   let time = 0.0005;
   starC = starC.offsetHSL(time, 0, 0);
   starPoints.material.uniforms.color.value = starC;
+  backdrop.material.color = starC;
 }
 
 // check if we should run timestep
@@ -407,7 +479,6 @@ function onClick(event) {
 
   if (pos.x && pos.y) {
     rustWasm.gen_blackhole(pos.x, pos.y);
-    updateBlackHoles();
   }
 }
 
@@ -415,6 +486,8 @@ function onClick(event) {
 function onWindowResize() {
   windowHalfX = window.innerWidth / 2;
   windowHalfY = window.innerHeight / 2;
+
+  simPoints.material.uniforms.height.value = windowHalfY;
 
   renderer.setSize(window.innerWidth, window.innerHeight);
   camera.aspect = window.innerWidth / window.innerHeight;

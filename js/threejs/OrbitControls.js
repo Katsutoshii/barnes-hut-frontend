@@ -511,7 +511,8 @@ var OrbitControls = function (object, domElement) {
     panStart.set(event.clientX, event.clientY);
   }
 
-  function handleMouseMoveRotate(event) {
+  // Custom code - add friction parameter to have a dampened rotating effect
+  function handleMouseMoveRotate(event, friction = 1) {
     rotateEnd.set(event.clientX, event.clientY);
 
     rotateDelta
@@ -520,9 +521,13 @@ var OrbitControls = function (object, domElement) {
 
     var element = scope.domElement;
 
-    rotateLeft((2 * Math.PI * rotateDelta.x) / element.clientHeight); // yes, height
+    rotateLeft(
+      (2 * Math.PI * rotateDelta.x) / element.clientHeight / friction
+    ); // yes, height
 
-    rotateUp((2 * Math.PI * rotateDelta.y) / element.clientHeight);
+    rotateUp(
+      (2 * Math.PI * rotateDelta.y) / element.clientHeight / friction
+    );
 
     rotateStart.copy(rotateEnd);
 
@@ -842,11 +847,6 @@ var OrbitControls = function (object, domElement) {
 
     if (state !== STATE.NONE) {
       scope.domElement.ownerDocument.addEventListener(
-        "pointermove",
-        onPointerMove,
-        false
-      );
-      scope.domElement.ownerDocument.addEventListener(
         "pointerup",
         onPointerUp,
         false
@@ -860,13 +860,6 @@ var OrbitControls = function (object, domElement) {
     if (scope.enabled === false) return;
 
     switch (state) {
-      case STATE.ROTATE:
-        if (scope.enableRotate === false) return;
-
-        handleMouseMoveRotate(event);
-
-        break;
-
       case STATE.DOLLY:
         if (scope.enableZoom === false) return;
 
@@ -880,6 +873,21 @@ var OrbitControls = function (object, domElement) {
         handleMouseMovePan(event);
 
         break;
+
+      case STATE.ROTATE:
+        if (scope.enableRotate === false) return;
+
+        handleMouseMoveRotate(event);
+
+        break;
+      // Custom code -  rotate on default case,
+      // so that we rotate on mouse move as well as drag
+      default:
+        if (scope.enableRotate === false) return;
+
+        handleMouseMoveRotate(event, 90);
+
+        break;
     }
   }
 
@@ -888,11 +896,6 @@ var OrbitControls = function (object, domElement) {
 
     handleMouseUp(event);
 
-    scope.domElement.ownerDocument.removeEventListener(
-      "pointermove",
-      onPointerMove,
-      false
-    );
     scope.domElement.ownerDocument.removeEventListener(
       "pointerup",
       onPointerUp,
@@ -1090,6 +1093,15 @@ var OrbitControls = function (object, domElement) {
     onPointerDown,
     false
   );
+
+  // Custom code - move this call over here so that
+  // mouse move and drag rotate controls
+  scope.domElement.ownerDocument.addEventListener(
+    "pointermove",
+    onPointerMove,
+    false
+  );
+
   scope.domElement.addEventListener("wheel", onMouseWheel, false);
 
   scope.domElement.addEventListener(

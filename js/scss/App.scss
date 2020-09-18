@@ -1,5 +1,6 @@
 @import "Vars.scss";
 @import "Inputs.scss";
+@import "Stats.scss";
 
 html,
 body {
@@ -19,13 +20,15 @@ body {
 
   background: linear-gradient(
     352deg,
-    #0b0810,
-    #090f36,
-    #210f28,
-    #21183c
+    #19191b,
+    #000000,
+    #050408,
+    #1a1d2a,
+    #271c49,
+    #593259
   );
   background-size: 300% 300%;
-  animation: moveBg 100s ease infinite;
+  animation: moveBg 70s ease infinite;
 }
 
 @keyframes moveBg {

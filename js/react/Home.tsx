@@ -6,6 +6,7 @@ import {
   updatePause,
   updateOptimization,
 } from "../threejs/particles";
+import { initStats } from "../utils/statsUtil";
 import {
   DEF_NUM_STARS,
   DEF_NUM_SIMULATE,
@@ -38,6 +39,7 @@ export default function Home(props: Props) {
   // On mount
   useEffect(() => {
     init(rustWasm);
+    initStats();
   }, []);
 
   useEffect(() => {

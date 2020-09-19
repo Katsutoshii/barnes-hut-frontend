@@ -1,10 +1,12 @@
 import "../scss/App.scss";
 import {
   init,
-  updateSimCount,
-  updateStarCount,
-  updatePause,
-  updateOptimization,
+  setSimCount,
+  setStarCount,
+  setPause,
+  setOptimization,
+  setDT,
+  setTheta,
 } from "../threejs/particles";
 import { initStats } from "../utils/statsUtil";
 import {
@@ -17,6 +19,12 @@ import {
   DEF_OPTIMIZATION,
   Optimization,
   clamp,
+  DEF_DT,
+  DEF_THETA,
+  MAX_DT,
+  MAX_THETA,
+  MIN_DT,
+  MIN_THETA,
 } from "../common";
 import React, { useState, useEffect } from "react";
 import Slider from "./Slider";
@@ -25,16 +33,18 @@ import ButtonGroup from "./ButtonGroup";
 
 type Props = { rustWasm };
 
-export default function Home(props: Props) {
+export default function Controls(props: Props) {
   const { rustWasm } = props;
   /* How many stars to simulate physics on */
-  const [simulatedCount, setSimCount] = useState(DEF_NUM_SIMULATE);
+  const [simulatedCount, sSimC] = useState(DEF_NUM_SIMULATE);
   /* How many stars not included in simulation */
-  const [starCount, setStarCount] = useState(DEF_NUM_STARS);
+  const [starCount, sStarC] = useState(DEF_NUM_STARS);
 
   /* Other controls */
-  const [pauseSim, setPause] = useState(DEF_PAUSE);
+  const [pauseSim, sP] = useState(DEF_PAUSE);
   const [opt, setOpt] = useState<Optimization>(DEF_OPTIMIZATION);
+  const [theta, sT] = useState(DEF_THETA);
+  const [dT, sDT] = useState(DEF_DT);
 
   // On mount
   useEffect(() => {
@@ -43,19 +53,27 @@ export default function Home(props: Props) {
   }, []);
 
   useEffect(() => {
-    updatePause(pauseSim);
+    setPause(pauseSim);
   }, [pauseSim]);
 
   useEffect(() => {
-    updateOptimization(opt);
+    setOptimization(opt);
   }, [opt]);
 
   useEffect(() => {
-    updateSimCount(simulatedCount);
+    setSimCount(simulatedCount);
   }, [simulatedCount]);
 
   useEffect(() => {
-    updateStarCount(starCount);
+    setTheta(theta);
+  }, [theta]);
+
+  useEffect(() => {
+    setDT(dT);
+  }, [dT]);
+
+  useEffect(() => {
+    setStarCount(starCount);
   }, [starCount]);
 
   return (
@@ -64,7 +82,7 @@ export default function Home(props: Props) {
       <form className="controls-container">
         <Button
           onClick={() => {
-            setPause(!pauseSim);
+            sP(!pauseSim);
           }}
         >
           {pauseSim ? "Play" : "Pause"}
@@ -75,12 +93,12 @@ export default function Home(props: Props) {
             setOpt(o);
             switch (o) {
               case Optimization.BarnesHut:
-                setSimCount(
+                sSimC(
                   clamp(simulatedCount, 0, MAX_NUM_BARNES_SIMULATE)
                 );
                 break;
               case Optimization.Direct:
-                setSimCount(
+                sSimC(
                   clamp(simulatedCount, 0, MAX_NUM_DIRECT_SIMULATE)
                 );
                 break;
@@ -100,14 +118,28 @@ export default function Home(props: Props) {
               : MAX_NUM_DIRECT_SIMULATE
           }
           value={simulatedCount}
-          onChange={setSimCount}
+          onChange={sSimC}
           label="Particles"
+        />
+        <Slider
+          min={MIN_THETA}
+          max={MAX_THETA}
+          value={theta}
+          onChange={sT}
+          label="Theta"
+        />
+        <Slider
+          min={MIN_DT}
+          max={MAX_DT}
+          value={dT}
+          onChange={sDT}
+          label="Delta Time"
         />
         <Slider
           min={0}
           max={MAX_NUM_STARS}
           value={starCount}
-          onChange={setStarCount}
+          onChange={sStarC}
           label="Stars"
         />
       </form>

@@ -1,4 +1,3 @@
-// Inspired from the following https://codepen.io/seanseansean/pen/EaBZEY
 "use strict";
 
 import Vertex from "./shaders/particles.vert";
@@ -10,10 +9,12 @@ import StarsVert from "./shaders/stars.vert";
 import * as THREE from "three";
 import { OrbitControls } from "./OrbitControls";
 import {
+  DEF_DT,
   DEF_NUM_SIMULATE,
   DEF_NUM_STARS,
   DEF_OPTIMIZATION,
   DEF_PAUSE,
+  DEF_THETA,
   DIMENSION,
   MAX_NUM_SIMULATE,
   MAX_NUM_STARS,
@@ -27,29 +28,29 @@ let rustWasm;
 */
 let starPoints,
   starC = new THREE.Color(0x3535aa);
-
 let simPoints;
-
-let backdrop;
 // Initialize simulation arrays in JS
 let r, v, a, m;
 const c = new Float32Array(MAX_NUM_SIMULATE * 3);
 // number of black holes
 let numBH = 0;
-
 /* Point cloud variables end ------------------------- */
 
-// Other global variables
+// Other three.js-related global variables
 let scene, camera, renderer, raycaster;
 let controls, updateControls;
+let backdrop;
 // For window resize
 let windowHalfX, windowHalfY;
+// For time uniform in shaders
 let startTime;
-// For control
+// For controls defined in Controls.tsx
 let paused = DEF_PAUSE;
 let optimization = DEF_OPTIMIZATION;
+let theta = DEF_THETA,
+  dT = DEF_DT;
 
-// General JS
+// Other general global variables
 // Distinguish click events from dragging: https://stackoverflow.com/questions/6042202/how-to-distinguish-mouse-click-and-drag
 const delta = 6;
 let startX;
@@ -91,6 +92,8 @@ export function init(wasm) {
     nearPlane,
     farPlane
   );
+  // Set where the camera position is
+  camera.position.set(0, 0, cameraZ);
 
   scene = new THREE.Scene();
 
@@ -128,7 +131,7 @@ export function init(wasm) {
     starM[i] = (Math.random() + increment) * increment * 1.5;
   }
 
-  starPoints = initUniformPoints(
+  starPoints = initStarPoints(
     DEF_NUM_STARS,
     starR,
     starM,
@@ -137,14 +140,14 @@ export function init(wasm) {
   );
   // Stars end ----------------------
 
-  // skybox
+  // Backdrop start ----------------------
   var geometry = new THREE.PlaneGeometry(WIDTH * 1.5, HEIGHT * 1.5);
   var texture = new THREE.TextureLoader().load(
-    "graphics/stars copy.png",
+    "graphics/stars.png",
     function (texture) {
       texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
       // repeat
-      texture.repeat.set(3.5, 3.5);
+      texture.repeat.set(3, 3);
     }
   );
   var material = new THREE.MeshBasicMaterial({
@@ -155,9 +158,11 @@ export function init(wasm) {
   backdrop = new THREE.Mesh(geometry, material);
   backdrop.position.z = -farPlane / 2;
   scene.add(backdrop);
+  // Backdrop end ----------------------
 
   // Simulated particles begin ----------------------
-  // halo
+  // Create glow
+  // Referenced https://github.com/spite/looper/blob/master/loops/253.js
   const glowRadius = 300;
   const glowMaterial = new THREE.RawShaderMaterial({
     uniforms: {
@@ -176,16 +181,16 @@ export function init(wasm) {
   );
   glow.position.z = -10;
   scene.add(glow);
-  // actual points
+  // Create actual points
   c.fill(1);
   tryUpdateBlackHoles();
-  simPoints = initPoints(DEF_NUM_SIMULATE, r, m, c);
+  simPoints = initSimPoints(DEF_NUM_SIMULATE, r, m, c);
   // Simulated particles end ----------------------
 
   renderer = new THREE.WebGLRenderer({
     antialias: true,
     alpha: true,
-  }); /*	Will render particles	*/
+  });
   renderer.setPixelRatio(window.devicePixelRatio); /*	Probably 1	*/
   renderer.setSize(WIDTH, HEIGHT); /*	Full screen 	*/
 
@@ -194,30 +199,24 @@ export function init(wasm) {
   // Add mouse/mobile controls
   controls = new OrbitControls(camera, renderer.domElement);
   controls.target.set(0, 0, 0);
-  // set controls' limits
+  // Set controls' limits
   controls.minDistance = cameraZ * 0.75;
   controls.maxDistance = cameraZ * 1.5;
-  // vertical rotation
+  // Limit vertical rotation
   controls.minPolarAngle = Math.PI * 0.4; // radians
   controls.maxPolarAngle = Math.PI * 0.6; // radians
-  // horizontal rotation
+  // Limit horizontal rotation
   controls.minAzimuthAngle = -Math.PI * 0.1; // radians
   controls.maxAzimuthAngle = Math.PI * 0.1; // radians
 
-  // set where the camera position is; where the controls should orbit around
-  camera.position.set(0, 0, cameraZ);
-
-  // add raycaster
-  raycaster = new THREE.Raycaster();
-
-  /* Event Listeners */
+  // Event listeners
   // Change camera on window resize
   window.addEventListener("resize", onWindowResize, false);
   // Differentiate between click and drag
   // If click, create new blackhole
   renderer.domElement.addEventListener("mousedown", (event) => {
     // Move this call from OrbitControls.js to here
-    // Prevent the browser from scrolling.
+    // To prevent the browser from scrolling.
     event.preventDefault();
     startX = event.pageX;
     startY = event.pageY;
@@ -235,70 +234,78 @@ export function init(wasm) {
     }
   });
 
+  // Initialize rest of global variables
+  raycaster = new THREE.Raycaster();
   startTime = Date.now();
 
   animate();
 }
 
-// update renderer with new parameters
-export function updateSimCount(simCount) {
-  // Assign the rust simulation's pointers to point to these arrays
+// Set simPoints' count
+export function setSimCount(simCount) {
   rustWasm.init_simulation(Number(simCount));
   simPoints.geometry.setDrawRange(0, simCount);
-  updateSimPos();
-  updateSimSize();
+  setSimPos();
+  setSimSize();
 }
 
-// update renderer with new parameters
-export function updateStarCount(starCount) {
+// Set starPoints' count
+export function setStarCount(starCount) {
   starPoints.geometry.setDrawRange(0, starCount);
 }
 
-// update controls with new parameters
-export function updatePause(p) {
+// Play or pause simulation
+export function setPause(p) {
   paused = p;
   if (!paused && simPoints) {
-    updateSimPos();
+    setSimPos();
   }
 }
 
-export function updateOptimization(o) {
+// Set type of optimization for simulation
+export function setOptimization(o) {
   optimization = o;
 }
 
+// Set theta of simulation - accuracy
+export function setTheta(t) {
+  theta = t;
+}
+
+// Set delta time of simulation - how fast it goes
+export function setDT(dt) {
+  dT = dt;
+}
+
 /*
- Update BufferGeometry's position attribute
+ Set BufferGeometry's position attribute
  Because for some reason, sometimes it won't get updated unless manually set .array
  */
-function updateSimPos() {
+function setSimPos() {
   if (simPoints) {
     simPoints.geometry.getAttribute("position").array = r;
     simPoints.geometry.attributes.position.needsUpdate = true;
   }
 }
 
-/*
- Update BufferGeometry's size attribute
- */
-function updateSimSize() {
+// Update BufferGeometry's size attribute
+function setSimSize() {
   if (simPoints) {
     simPoints.geometry.getAttribute("size").array = m;
     simPoints.geometry.attributes.size.needsUpdate = true;
   }
 }
 
-/*
- Update BufferGeometry's color attribute
- */
-function updateSimColor() {
+// Set BufferGeometry's color attribute
+function setSimColor() {
   if (simPoints) {
     simPoints.geometry.getAttribute("color").array = c;
     simPoints.geometry.attributes.color.needsUpdate = true;
   }
 }
 
-// init points where size and color are uniform
-function initUniformPoints(count, positions, size, color, p) {
+// Init starry point cloud
+function initStarPoints(count, positions, size, color, p) {
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute(
     "position",
@@ -329,13 +336,12 @@ function initUniformPoints(count, positions, size, color, p) {
   const points = new THREE.Points(geometry, material);
   points.geometry.setDrawRange(0, count);
 
-  // add stars to scene
   scene.add(points);
   return points;
 }
 
-// init points where size and color are not uniform
-function initPoints(count, position, size, colors) {
+// Init simulation point cloud
+function initSimPoints(count, position, size, colors) {
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute(
     "position",
@@ -374,14 +380,13 @@ function initPoints(count, position, size, colors) {
   const points = new THREE.Points(geometry, material);
   points.geometry.setDrawRange(0, count);
 
-  // add stars to scene
   scene.add(points);
   return points;
 }
 
 /* 
-When a new black hole is created, array m changes
-init black hole colors and size
+Test to see if number of black holes changed
+If so, update simPoints' buffer attributes
 */
 function tryUpdateBlackHoles() {
   const n = rustWasm.get_num_blackhole();
@@ -406,12 +411,12 @@ function tryUpdateBlackHoles() {
   }
 
   numBH = n;
-  updateSimSize();
-  updateSimPos();
-  updateSimColor();
+  setSimSize();
+  setSimPos();
+  setSimColor();
 }
 
-//   update loop
+// Update loop
 function animate() {
   requestAnimationFrame(animate);
 
@@ -420,7 +425,7 @@ function animate() {
   render();
 }
 
-//   update and render update
+// Update threejs scene
 function render() {
   checkPlay();
 
@@ -434,6 +439,7 @@ function render() {
   renderer.render(scene, camera);
 }
 
+// Set time uniform in all shaders that take in time
 function setTime() {
   let elapsedMilliseconds = Date.now() - startTime;
   simPoints.material.uniforms.time.value = elapsedMilliseconds / 4000;
@@ -449,20 +455,20 @@ function changeStarsHue() {
   backdrop.material.color = starC;
 }
 
-// check if we should run timestep
+// Check if we should run timestep
 function checkPlay() {
   if (!paused) {
     if (optimization == Optimization.BarnesHut) {
-      rustWasm.run_timestep_barnes_hut(0.1);
+      rustWasm.run_timestep_barnes_hut(dT);
     } else {
-      rustWasm.run_timestep(0.1);
+      rustWasm.run_timestep(dT);
     }
     // Tell simulation points to update
     simPoints.geometry.attributes.position.needsUpdate = true;
   }
 }
 
-// on click, generate new black hole
+// On click, generate new black hole
 function onClick(event) {
   event.preventDefault();
 
@@ -482,7 +488,7 @@ function onClick(event) {
   }
 }
 
-//   on window resize, resize the webgl renderer
+// On window resize, resize the webgl renderer
 function onWindowResize() {
   windowHalfX = window.innerWidth / 2;
   windowHalfY = window.innerHeight / 2;

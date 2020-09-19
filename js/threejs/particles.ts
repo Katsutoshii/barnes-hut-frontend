@@ -458,13 +458,14 @@ function changeStarsHue() {
 // Check if we should run timestep
 function checkPlay() {
   if (!paused) {
+    r = rustWasm.get_r();
     if (optimization == Optimization.BarnesHut) {
       rustWasm.run_timestep_barnes_hut(dT);
     } else {
       rustWasm.run_timestep(dT);
     }
     // Tell simulation points to update
-    simPoints.geometry.attributes.position.needsUpdate = true;
+    updateSimPos();
   }
 }
 

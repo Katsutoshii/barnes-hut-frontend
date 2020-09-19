@@ -48,7 +48,7 @@ let startTime;
 let paused = DEF_PAUSE;
 let optimization = DEF_OPTIMIZATION;
 let theta = DEF_THETA,
-  dT = DEF_DT;
+  dt = DEF_DT;
 
 // Other general global variables
 // Distinguish click events from dragging: https://stackoverflow.com/questions/6042202/how-to-distinguish-mouse-click-and-drag
@@ -201,7 +201,7 @@ export function init(wasm) {
   controls.target.set(0, 0, 0);
   // Set controls' limits
   controls.minDistance = cameraZ * 0.75;
-  controls.maxDistance = cameraZ * 1.5;
+  // controls.maxDistance = cameraZ * 1.5;
   // Limit vertical rotation
   controls.minPolarAngle = Math.PI * 0.4; // radians
   controls.maxPolarAngle = Math.PI * 0.6; // radians
@@ -257,7 +257,7 @@ export function setStarCount(starCount) {
 // Play or pause simulation
 export function setPause(p) {
   paused = p;
-  if (!paused && simPoints) {
+  if (!paused) {
     setSimPos();
   }
 }
@@ -274,7 +274,7 @@ export function setTheta(t) {
 
 // Set delta time of simulation - how fast it goes
 export function setDT(dt) {
-  dT = dt;
+  dt = dt;
 }
 
 /*
@@ -411,6 +411,8 @@ function tryUpdateBlackHoles() {
   }
 
   numBH = n;
+  // Hack around the fact that m gets invalidated at this point sometimes due to WebAssembly limitations
+  m = rustWasm.get_m();
   setSimSize();
   setSimPos();
   setSimColor();
@@ -460,12 +462,13 @@ function checkPlay() {
   if (!paused) {
     r = rustWasm.get_r();
     if (optimization == Optimization.BarnesHut) {
-      rustWasm.run_timestep_barnes_hut(dT);
+      rustWasm.run_timestep_barnes_hut(dt, theta);
     } else {
-      rustWasm.run_timestep(dT);
+      rustWasm.run_timestep(dt);
     }
     // Tell simulation points to update
-    updateSimPos();
+    setSimPos();
+    console.log(r);
   }
 }
 

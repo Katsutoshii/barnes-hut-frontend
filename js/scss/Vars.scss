@@ -1,6 +1,33 @@
+@font-face {
+  font-family: "Helvetica";
+  src: url("../../static/fonts/HelveticaNeueLTEx.otf")
+    format("opentype");
+  font-weight: 800;
+}
+
+@font-face {
+  font-family: "Helvetica";
+  src: url("../../static/fonts/HelveticaNeueLTTh.otf")
+    format("opentype");
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: "Helvetica";
+  src: url("../../static/fonts/HelveticaNeueLTLt.otf")
+    format("opentype");
+  font-weight: 400;
+}
+
 $font-color: white;
 $black: black;
 $dark: rgb(86, 82, 82);
+$red: red;
+
+$sm-ft-size: 0.9rem;
+$md-ft-size: 1.2rem;
+
+$nav-padding: 3vw 4vw;
 
 @mixin absolute() {
   position: absolute;

@@ -27,14 +27,16 @@ import {
   MIN_THETA,
 } from "../common";
 import React, { useState, useEffect } from "react";
-import Slider from "./Slider";
-import Button from "./Button";
-import ButtonGroup from "./ButtonGroup";
+import Slider from "./inputs/Slider";
+import Button from "./inputs/Button";
+import ButtonGroup from "./inputs/ButtonGroup";
 
 type Props = { rustWasm };
 
 export default function Controls(props: Props) {
   const { rustWasm } = props;
+  const [isShown, setShown] = useState(false);
+
   /* How many stars to simulate physics on */
   const [simulatedCount, sSimC] = useState(DEF_NUM_SIMULATE);
   /* How many stars not included in simulation */
@@ -44,7 +46,7 @@ export default function Controls(props: Props) {
   const [pauseSim, sP] = useState(DEF_PAUSE);
   const [opt, setOpt] = useState<Optimization>(DEF_OPTIMIZATION);
   const [theta, sT] = useState(DEF_THETA);
-  const [dT, sDT] = useState(DEF_DT);
+  const [dt, sDT] = useState(DEF_DT);
 
   // On mount
   useEffect(() => {
@@ -69,8 +71,8 @@ export default function Controls(props: Props) {
   }, [theta]);
 
   useEffect(() => {
-    setDT(dT);
-  }, [dT]);
+    setDT(dt);
+  }, [dt]);
 
   useEffect(() => {
     setStarCount(starCount);
@@ -78,13 +80,22 @@ export default function Controls(props: Props) {
 
   return (
     <>
-      <h1 className="header">Click to create black hole</h1>
-      <form className="controls-container">
-        <Button
-          onClick={() => {
-            sP(!pauseSim);
-          }}
-        >
+      <Button
+        onClick={() => setShown(!isShown)}
+        className="controls h3 upper"
+      >
+        Controls
+      </Button>
+      <form
+        className={[
+          "controls-container",
+          Optimization[opt],
+          isShown ? "shown" : "hidden",
+        ].join(" ")}
+      >
+        <h1 className="header">Click to create black hole</h1>
+
+        <Button onClick={() => sP(!pauseSim)}>
           {pauseSim ? "Play" : "Pause"}
         </Button>
         <ButtonGroup
@@ -124,14 +135,17 @@ export default function Controls(props: Props) {
         <Slider
           min={MIN_THETA}
           max={MAX_THETA}
+          step={0.1}
           value={theta}
           onChange={sT}
+          className="theta"
           label="Theta"
         />
         <Slider
           min={MIN_DT}
           max={MAX_DT}
-          value={dT}
+          step={0.1}
+          value={dt}
           onChange={sDT}
           label="Delta Time"
         />

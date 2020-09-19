@@ -1,0 +1,16 @@
+.about-panel {
+  @include absolute;
+  background: $black;
+  z-index: 10000;
+  &.hidden {
+  }
+  &.shown {
+  }
+}
+
+.btn.about {
+  @include absolute;
+  margin: $nav-padding;
+  right: initial;
+  bottom: initial;
+}

@@ -35,6 +35,10 @@ module.exports = (_, { mode }) => ({
         ],
       },
       {
+        test: /\.(png|woff|woff2|eot|ttf|otf|svg)$/,
+        loader: "url-loader?limit=100000",
+      },
+      {
         test: /\.(glsl|vs|fs|vert|frag)$/,
         exclude: /node_modules/,
         use: ["raw-loader", "glslify-loader"],

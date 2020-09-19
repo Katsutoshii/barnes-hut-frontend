@@ -1,6 +1,6 @@
 @import "Vars.scss";
-@import "Inputs.scss";
-@import "Stats.scss";
+@import "Controls.scss";
+@import "About.scss";
 
 html,
 body {
@@ -14,9 +14,10 @@ body {
 }
 
 body {
-  color: $font-color;
   margin: 0;
   overflow: hidden;
+  font-family: "Helvetica";
+  font-size: $sm-ft-size;
 
   background: linear-gradient(
     352deg,
@@ -29,6 +30,50 @@ body {
   );
   background-size: 300% 300%;
   animation: moveBg 70s ease infinite;
+}
+
+body,
+a {
+  color: $font-color;
+}
+
+a,
+.btn {
+  pointer-events: all;
+}
+
+.btn {
+  background: $black;
+}
+
+.h3 {
+  font-weight: 800;
+  font-size: $md-ft-size;
+}
+
+.upper {
+  text-transform: uppercase;
+}
+
+.hidden {
+  display: none;
+}
+
+.stats {
+  margin: $nav-padding;
+  top: initial !important;
+  bottom: 0;
+  right: initial;
+  left: 0 !important;
+  z-index: 100 !important;
+}
+
+.credits {
+  @include absolute;
+  margin: $nav-padding;
+  top: initial;
+  left: initial;
+  font-weight: 400;
 }
 
 @keyframes moveBg {

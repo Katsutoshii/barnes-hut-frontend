@@ -1,8 +1,27 @@
 // CONTAINER
+.btn.controls {
+  @include absolute;
+  margin: $nav-padding;
+  left: initial;
+  bottom: initial;
+}
+
 .controls-container {
-  background: grey;
+  @include absolute;
+  left: initial;
+  bottom: initial;
+  background: $black;
   pointer-events: all;
   max-width: 20vw;
+  // barnes hut
+  &.BarnesHut {
+  }
+  // direct
+  &.Direct {
+    .theta {
+      display: none;
+    }
+  }
 }
 
 //   SLIDERS
@@ -17,7 +36,7 @@
   background-color: grey;
 }
 .error-text {
-  color: red;
+  color: $red;
 }
 
 // BUTTONS

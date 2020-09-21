@@ -9,7 +9,7 @@ export enum Optimization {
 // How many stars that will be simulated?
 export const DEF_NUM_SIMULATE = 500;
 // Below should equal MAX_PARTICLES from lib.rs
-export const MAX_NUM_SIMULATE = 1000;
+export const MAX_NUM_SIMULATE = 2000;
 export const MAX_NUM_DIRECT_SIMULATE = 500;
 export const MAX_NUM_BARNES_SIMULATE = MAX_NUM_SIMULATE;
 // Other min / max for other controls

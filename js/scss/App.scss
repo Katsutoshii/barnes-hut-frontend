@@ -83,7 +83,6 @@ a,
 
 .btn-group {
   @include column-grid(minmax(10px, 1fr), 0);
-  background: $black;
   border-left: 1px $font-color solid;
   border-right: 1px $font-color solid;
 

@@ -1,3 +1,4 @@
+pushd "$(dirname "$0")"
 # Create dist
 npm run build
 
@@ -8,8 +9,9 @@ unset GLOBIGNORE
 
 # Copy dst
 cp -r dist/** galaxy-sim.github.io
-pushd
+pushd galaxy-sim.github.io
 git add .
 git commit -am "Auto commit from publish.sh"
 git push
+popd
 popd

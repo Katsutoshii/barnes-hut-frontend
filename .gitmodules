@@ -1,3 +1,6 @@
 [submodule "barnes-hut-rs"]
 	path = barnes-hut-rs
 	url = https://github.com/Katsutoshii/barnes-hut-rs
+[submodule "galaxy-sim.github.io"]
+	path = galaxy-sim.github.io
+	url = https://github.com/galaxy-sim/galaxy-sim.github.io

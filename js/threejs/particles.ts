@@ -98,6 +98,7 @@ export function init(wasm) {
   scene = new THREE.Scene();
 
   const container = document.createElement("div");
+  container.id = "galaxy";
   document.body.appendChild(container);
 
   // Stars begin ----------------------
@@ -201,7 +202,7 @@ export function init(wasm) {
   controls.target.set(0, 0, 0);
   // Set controls' limits
   controls.minDistance = cameraZ * 0.75;
-  // controls.maxDistance = cameraZ * 1.5;
+  controls.maxDistance = cameraZ * 1.5;
   // Limit vertical rotation
   controls.minPolarAngle = Math.PI * 0.4; // radians
   controls.maxPolarAngle = Math.PI * 0.6; // radians
@@ -273,8 +274,8 @@ export function setTheta(t) {
 }
 
 // Set delta time of simulation - how fast it goes
-export function setDT(dt) {
-  dt = dt;
+export function setDT(t) {
+  dt = t;
 }
 
 /*
@@ -468,7 +469,6 @@ function checkPlay() {
     }
     // Tell simulation points to update
     setSimPos();
-    console.log(r);
   }
 }
 

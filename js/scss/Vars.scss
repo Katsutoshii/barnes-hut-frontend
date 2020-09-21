@@ -2,6 +2,13 @@
   font-family: "Helvetica";
   src: url("../../static/fonts/HelveticaNeueLTEx.otf")
     format("opentype");
+  font-weight: 1000;
+}
+
+@font-face {
+  font-family: "Helvetica";
+  src: url("../../static/fonts/HelveticaNeueLTLt.otf")
+    format("opentype");
   font-weight: 800;
 }
 
@@ -9,25 +16,33 @@
   font-family: "Helvetica";
   src: url("../../static/fonts/HelveticaNeueLTTh.otf")
     format("opentype");
-  font-weight: 600;
-}
-
-@font-face {
-  font-family: "Helvetica";
-  src: url("../../static/fonts/HelveticaNeueLTLt.otf")
-    format("opentype");
-  font-weight: 400;
+  font-weight: 500;
 }
 
 $font-color: white;
 $black: black;
 $dark: rgb(86, 82, 82);
 $red: red;
+$blue: rgb(115, 115, 143);
 
-$sm-ft-size: 0.9rem;
-$md-ft-size: 1.2rem;
+$grey-opacity: 0.6;
 
-$nav-padding: 3vw 4vw;
+$smst-ft-size: 12px;
+$sm-ft-size: 0.85rem;
+$md-ft-size: 1rem;
+$lg-ft-size: 2rem;
+
+$nav-padding: 2vw 2.5vw;
+
+$text-glow: 0 0 5px rgba($font-color, 0.2),
+  0 0 20px rgba($font-color, 0.35);
+
+$text-outline: 0 0 1px rgba($font-color, 1),
+  0 0 2px rgba($font-color, 1);
+
+$letter-spacing: 0.12rem;
+
+$about-panel-z-index: 10000;
 
 @mixin absolute() {
   position: absolute;
@@ -37,9 +52,40 @@ $nav-padding: 3vw 4vw;
   right: 0;
 }
 
+@mixin flex() {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+}
+
 @mixin column-grid($size, $gap) {
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: $size;
   column-gap: $gap;
+}
+
+@mixin column-template-grid($size, $gap) {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: $size;
+  column-gap: $gap;
+}
+
+@mixin row-grid($size, $gap) {
+  display: grid;
+  grid-auto-rows: $size;
+  row-gap: $gap;
+}
+
+$thumb-size: 1em;
+
+@mixin thumb {
+  appearance: none;
+  width: $thumb-size;
+  height: $thumb-size;
+  background: $black;
+  border: 2px solid $font-color;
+  border-radius: $thumb-size;
+  cursor: pointer;
 }

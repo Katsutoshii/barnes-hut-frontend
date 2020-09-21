@@ -1,6 +1,8 @@
 @import "Vars.scss";
+@import "Animation.scss";
 @import "Controls.scss";
 @import "About.scss";
+@import "Loading.scss";
 
 html,
 body {
@@ -13,10 +15,14 @@ body {
   pointer-events: none;
 }
 
+#galaxy {
+}
+
 body {
   margin: 0;
   overflow: hidden;
   font-family: "Helvetica";
+  font-weight: 600;
   font-size: $sm-ft-size;
 
   background: linear-gradient(
@@ -29,7 +35,7 @@ body {
     #593259
   );
   background-size: 300% 300%;
-  animation: moveBg 70s ease infinite;
+  animation: move-bg 70s ease infinite;
 }
 
 body,
@@ -37,18 +43,113 @@ a {
   color: $font-color;
 }
 
+a {
+  text-decoration: none;
+  position: relative;
+
+  &:after {
+    background: none repeat scroll 0 0 transparent;
+    bottom: 0;
+    content: "";
+    display: block;
+    height: 1px;
+    left: 50%;
+    position: absolute;
+    background: $font-color;
+    transition: width 0.3s ease 0s, left 0.3s ease 0s;
+    width: 0;
+  }
+  &:hover:after {
+    width: 50%;
+    left: 23%;
+  }
+}
+
 a,
 .btn {
   pointer-events: all;
+  letter-spacing: 0.08rem;
 }
 
+// BUTTONS
 .btn {
-  background: $black;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  &:hover {
+    color: $black;
+    text-shadow: $text-outline;
+  }
 }
 
-.h3 {
-  font-weight: 800;
+.btn-group {
+  @include column-grid(minmax(10px, 1fr), 0);
+  background: $black;
+  border-left: 1px $font-color solid;
+  border-right: 1px $font-color solid;
+
+  .active {
+  }
+  .btn:not(.active) {
+    opacity: $grey-opacity;
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+.slider {
+  font-size: $smst-ft-size;
+  font-weight: 100;
+  letter-spacing: 0.08rem;
+  overflow: hidden;
+  height: $thumb-size * 1.25;
+  @include column-template-grid(78px auto 32px, 10px);
+  align-items: center;
+  input[type="range"] {
+    appearance: none;
+    outline: none;
+    height: 3px;
+    width: 100%;
+    min-width: 0;
+    &::-webkit-slider-thumb {
+      @include thumb;
+    }
+    &::-moz-range-thumb {
+      @include thumb;
+    }
+    &::-ms-thumb {
+      @include thumb;
+    }
+  }
+}
+
+.horz-divider,
+.vert-divider {
+  margin: auto;
+  position: relative;
+  background: $font-color;
+}
+
+.horz-divider {
+  width: 80%;
+  height: 1px;
+}
+
+.vert-divider {
+  height: 80%;
+  width: 1px;
+}
+
+.md {
   font-size: $md-ft-size;
+}
+
+.lg {
+  font-size: $lg-ft-size;
+}
+
+.b {
+  font-weight: 900;
 }
 
 .upper {
@@ -56,7 +157,7 @@ a,
 }
 
 .hidden {
-  display: none;
+  visibility: hidden;
 }
 
 .stats {
@@ -68,22 +169,49 @@ a,
   z-index: 100 !important;
 }
 
+.notification {
+  text-align: center;
+  letter-spacing: $letter-spacing;
+  margin-top: 8vw;
+  &.out {
+    animation: fade-out 1s ease-in both;
+  }
+}
+
+.shimmer {
+  animation: fade-in 1.3s ease-in 0.5s both;
+  text-shadow: $text-glow;
+  span {
+    // assuming notification string length <= 100
+    @for $i from 2 through 100 {
+      &:nth-of-type(#{$i}) {
+        animation: shimmer
+          (random() * 3 + 2) +
+          s
+          ease-in
+          both
+          infinite;
+        animation-delay: random() + s;
+      }
+    }
+  }
+}
+
+.about-panel.hidden .shimmer {
+  animation: none;
+}
+
 .credits {
   @include absolute;
+  @include column-grid(max-content, 1em);
   margin: $nav-padding;
   top: initial;
   left: initial;
-  font-weight: 400;
 }
 
-@keyframes moveBg {
-  0% {
-    background-position: 45% 0%;
-  }
-  50% {
-    background-position: 56% 100%;
-  }
-  100% {
-    background-position: 45% 0%;
-  }
+.faded,
+.credits {
+  font-weight: 400;
+  opacity: $grey-opacity;
+  letter-spacing: $letter-spacing;
 }

@@ -1,18 +1,42 @@
-// CONTAINER
+$controls-panel-z-index: 1;
+
 .btn.controls {
-  @include absolute;
-  margin: $nav-padding;
-  left: initial;
-  bottom: initial;
+  text-shadow: $text-glow;
+  padding: $nav-padding;
+  z-index: $controls-panel-z-index + 1;
+  visibility: visible;
+  opacity: 1;
+  justify-self: end;
 }
 
-.controls-container {
+.btn.controls:after {
+  content: "Controls";
+  position: relative;
+}
+
+/* if not hidden, show close button; else, 
+show original button. 
+Do not change below ordering! Ordering of close-in, close-out is important! */
+.controls-panel.shown .btn.controls:after {
+  animation: close-in 0.5s ease forwards;
+}
+@include close-out-mixin(
+  $label: "Controls",
+  $class: ".controls-panel.out .btn.controls:after",
+  $delay: 0s
+);
+
+.controls-panel {
   @include absolute;
+  @include row-grid(max-content, 0);
+  overflow: hidden;
   left: initial;
   bottom: initial;
-  background: $black;
+  width: 320px;
+  min-width: 20vw;
+  max-width: 100vw;
   pointer-events: all;
-  max-width: 20vw;
+  z-index: $controls-panel-z-index;
   // barnes hut
   &.BarnesHut {
   }
@@ -20,6 +44,59 @@
   &.Direct {
     .theta {
       display: none;
+    }
+  }
+  &.shown {
+    pointer-events: all;
+  }
+
+  .btn {
+    white-space: nowrap;
+  }
+
+  .text-content {
+    @include row-grid(max-content, 1.2em);
+    padding: 0 2vw 2vw 2vw;
+    transform-origin: top right;
+  }
+
+  &.shown {
+    .text-content {
+      animation: fade-in-scale 0.5s ease both;
+    }
+  }
+
+  &.out {
+    .text-content {
+      animation: fade-out-scale 0.5s ease both;
+    }
+  }
+
+  .btn:not(.controls) {
+    text-align: center;
+    padding: 1vw;
+    &:hover {
+      background: $font-color;
+    }
+  }
+
+  .btn.play {
+    font-size: $md-ft-size;
+    line-height: $md-ft-size;
+    outline: 1px solid white;
+  }
+
+  .btn.reset {
+    outline: none;
+  }
+
+  .btn-group {
+    .btn:not(.active) {
+      outline: none;
+    }
+    .btn.active {
+      background: $font-color;
+      color: $black;
     }
   }
 }
@@ -37,13 +114,4 @@
 }
 .error-text {
   color: $red;
-}
-
-// BUTTONS
-.btn-group {
-  @include column-grid("max-content", 10px);
-  background: $black;
-  .active {
-    background: $dark;
-  }
 }

@@ -40,11 +40,11 @@ var Stats = function () {
     frames = 0;
 
   // Custom code - change color
-  var fpsPanel = addPanel(new Stats.Panel("FPS", "#fff", "#002"));
-  var msPanel = addPanel(new Stats.Panel("MS", "#0f0", "#020"));
+  var fpsPanel = addPanel(new Stats.Panel("FPS", "#fff", "#000"));
+  var msPanel = addPanel(new Stats.Panel("MS", "#6af", "#000"));
 
   if (self.performance && self.performance.memory) {
-    var memPanel = addPanel(new Stats.Panel("MB", "#f08", "#201"));
+    var memPanel = addPanel(new Stats.Panel("MB", "#fad", "#000"));
   }
 
   showPanel(0);
@@ -118,7 +118,9 @@ Stats.Panel = function (name, fg, bg) {
   canvas.style.cssText = "width:80px;height:48px";
 
   var context = canvas.getContext("2d");
-  context.font = "bold " + 9 * PR + "px Helvetica,Arial,sans-serif";
+  // Custom code - change from bold to regular
+  context.font = "600 " + 11 * PR + "px Helvetica,sans-serif";
+  context.fontWeight = 600;
   context.textBaseline = "top";
 
   context.fillStyle = bg;

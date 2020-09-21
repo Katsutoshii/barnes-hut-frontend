@@ -1,0 +1,119 @@
+@keyframes fade-out {
+  from {
+    opacity: 1;
+    visibility: visible;
+  }
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    visibility: visible;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out-scale {
+  from {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.5);
+  }
+}
+
+@keyframes fade-in-scale {
+  from {
+    opacity: 0;
+    visibility: visible;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+// animation for hiding button then showing "close" in its place
+// fade original button, wait, then show close
+@keyframes close-in {
+  0% {
+    opacity: 1;
+  }
+  40%,
+  60% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+    content: "Close";
+  }
+}
+
+// animation for hiding button then showing "close" in its place
+// fade original button, wait, then show close
+@mixin close-out-mixin($label, $class, $delay: 0.3s) {
+  $animation-name: unique-id() !global;
+
+  @keyframes #{$animation-name} {
+    0% {
+      opacity: 1;
+      content: "Close";
+    }
+    40%,
+    60% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+      content: $label;
+    }
+  }
+  #{$class} {
+    animation: $animation-name 1s ease $delay both;
+  }
+}
+
+// animation for constantly moving gradient background
+@keyframes move-bg {
+  0% {
+    background-position: 45% 0%;
+  }
+  50% {
+    background-position: 56% 100%;
+  }
+  100% {
+    background-position: 45% 0%;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}

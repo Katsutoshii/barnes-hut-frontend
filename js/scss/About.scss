@@ -1,16 +1,62 @@
+.btn.about {
+  @include absolute;
+  text-shadow: $text-glow;
+  padding: $nav-padding;
+  right: initial;
+  bottom: initial;
+  z-index: $about-panel-z-index + 1;
+  visibility: visible;
+  opacity: 1;
+}
+
+.btn.about:after {
+  content: "About";
+  position: relative;
+}
+
+/* if not hidden, show close button; else, 
+show original button. 
+Do not change below ordering! Ordering of close-in, close-out is important! */
+.about-panel:not(.hidden) .btn.about:after {
+  animation: close-in 1s ease forwards;
+}
+@include close-out-mixin(
+  $label: "About",
+  $class: ".about-panel.out .btn.about:after"
+);
+
 .about-panel {
   @include absolute;
-  background: $black;
-  z-index: 10000;
-  &.hidden {
+  z-index: $about-panel-z-index;
+  pointer-events: all;
+
+  &:not(.hidden) {
+    .text-content {
+      animation: fade-in 0.5s ease 1s both;
+    }
   }
-  &.shown {
+
+  &.out {
+    .text-content {
+      animation: fade-out 0.5s ease both;
+    }
+  }
+
+  .text-content {
+    @include absolute;
+    @include row-grid(max-content, 2em);
+    justify-items: center;
+    align-content: center;
   }
 }
 
-.btn.about {
-  @include absolute;
-  margin: $nav-padding;
-  right: initial;
-  bottom: initial;
+.socials-container {
+  @include column-grid(max-content, 2em);
+}
+
+.socials {
+  @include row-grid(max-content, 1.2em);
+  .media {
+    @include column-grid(max-content, 0.5em);
+  }
 }

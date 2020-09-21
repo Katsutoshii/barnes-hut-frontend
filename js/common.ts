@@ -16,7 +16,7 @@ export const MAX_NUM_BARNES_SIMULATE = MAX_NUM_SIMULATE;
 export const MIN_THETA = 0.1;
 export const MAX_THETA = 3;
 export const DEF_THETA = 1;
-export const MIN_DT = 0.05;
+export const MIN_DT = 0.1;
 export const MAX_DT = 25;
 export const DEF_DT = 0.1;
 // How many background stars, not a part of the simulation?

@@ -7,8 +7,8 @@ import {
   setOptimization,
   setDT,
   setTheta,
-} from "../threejs/particles";
-import { initStats } from "../utils/statsUtil";
+} from "../threejs/Particles";
+import { initStats } from "../utils/StatsUtil";
 import {
   DEF_NUM_STARS,
   DEF_NUM_SIMULATE,
@@ -80,82 +80,89 @@ export default function Controls(props: Props) {
 
   return (
     <>
-      <Button
-        onClick={() => setShown(!isShown)}
-        className="controls h3 upper"
-      >
-        Controls
-      </Button>
       <form
         className={[
-          "controls-container",
+          "controls-panel upper",
           Optimization[opt],
-          isShown ? "shown" : "hidden",
+          isShown ? "shown" : "out",
         ].join(" ")}
       >
-        <h1 className="header">Click to create black hole</h1>
-
-        <Button onClick={() => sP(!pauseSim)}>
-          {pauseSim ? "Play" : "Pause"}
-        </Button>
-        <ButtonGroup
-          value={opt}
-          onClick={(o) => {
-            setOpt(o);
-            switch (o) {
-              case Optimization.BarnesHut:
-                sSimC(
-                  clamp(simulatedCount, 0, MAX_NUM_BARNES_SIMULATE)
-                );
-                break;
-              case Optimization.Direct:
-                sSimC(
-                  clamp(simulatedCount, 0, MAX_NUM_DIRECT_SIMULATE)
-                );
-                break;
-            }
+        <Button
+          onClick={() => {
+            setShown(!isShown);
           }}
-        >
-          <Button groupLabel={Optimization.BarnesHut}>
-            Barnes Hut
+          className="controls b md upper"
+        />
+        <section className="text-content">
+          <Button className="play" onClick={() => sP(!pauseSim)}>
+            {pauseSim ? "Play" : "Pause"}
           </Button>
-          <Button groupLabel={Optimization.Direct}>Direct</Button>
-        </ButtonGroup>
-        <Slider
-          min={0}
-          max={
-            opt == Optimization.BarnesHut
-              ? MAX_NUM_BARNES_SIMULATE
-              : MAX_NUM_DIRECT_SIMULATE
-          }
-          value={simulatedCount}
-          onChange={sSimC}
-          label="Particles"
-        />
-        <Slider
-          min={MIN_THETA}
-          max={MAX_THETA}
-          step={0.1}
-          value={theta}
-          onChange={sT}
-          className="theta"
-          label="Theta"
-        />
-        <Slider
-          min={MIN_DT}
-          max={MAX_DT}
-          step={0.1}
-          value={dt}
-          onChange={sDT}
-          label="Delta Time"
-        />
-        <Slider
-          min={0}
-          max={MAX_NUM_STARS}
-          value={starCount}
-          onChange={sStarC}
-          label="Stars"
-        />
+          <Button
+            className="reset faded"
+            onClick={() => setSimCount(simulatedCount)}
+          >
+            Reset
+          </Button>
+          <div className="horz-divider" />
+          <ButtonGroup
+            value={opt}
+            onClick={(o) => {
+              setOpt(o);
+              switch (o) {
+                case Optimization.BarnesHut:
+                  sSimC(
+                    clamp(simulatedCount, 0, MAX_NUM_BARNES_SIMULATE)
+                  );
+                  break;
+                case Optimization.Direct:
+                  sSimC(
+                    clamp(simulatedCount, 0, MAX_NUM_DIRECT_SIMULATE)
+                  );
+                  break;
+              }
+            }}
+          >
+            <Button groupLabel={Optimization.BarnesHut}>
+              Barnes Hut
+            </Button>
+            <Button groupLabel={Optimization.Direct}>Direct</Button>
+          </ButtonGroup>
+          <Slider
+            min={0}
+            max={
+              opt == Optimization.BarnesHut
+                ? MAX_NUM_BARNES_SIMULATE
+                : MAX_NUM_DIRECT_SIMULATE
+            }
+            value={simulatedCount}
+            onChange={sSimC}
+            label="Particles"
+          />
+          <Slider
+            min={MIN_THETA}
+            max={MAX_THETA}
+            step={0.1}
+            value={theta}
+            onChange={sT}
+            className="theta"
+            label="Theta"
+          />
+          <Slider
+            min={MIN_DT}
+            max={MAX_DT}
+            step={0.1}
+            value={dt}
+            onChange={sDT}
+            label="Delta Time"
+          />
+          <Slider
+            min={0}
+            max={MAX_NUM_STARS}
+            value={starCount}
+            onChange={sStarC}
+            label="Stars"
+          />
+        </section>
       </form>
     </>
   );

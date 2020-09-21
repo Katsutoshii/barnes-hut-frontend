@@ -25,20 +25,18 @@ export default function Slider(props: Props) {
   };
 
   return (
-    <div className={className}>
-      <h2>{label}</h2>
-      <label>
-        <input
-          id={label}
-          type="range"
-          min={min}
-          max={max}
-          value={value}
-          onChange={handleChange}
-          step={step}
-        />
-        {value}
-      </label>
+    <div className={["slider", className].join(" ")}>
+      <div>{label}</div>
+      <input
+        id={label}
+        type="range"
+        min={min}
+        max={max}
+        value={value}
+        onChange={handleChange}
+        step={step}
+      />
+      <div className="value">{value}</div>
     </div>
   );
 }

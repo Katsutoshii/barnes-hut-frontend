@@ -9,6 +9,7 @@ unset GLOBIGNORE
 # Copy dst
 cp -r dist/** galaxy-sim.github.io
 pushd
+git add .
 git commit -am "Auto commit from publish.sh"
 git push
 popd

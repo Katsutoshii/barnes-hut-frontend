@@ -9,6 +9,7 @@ import {
   setTheta,
 } from "../threejs/Particles";
 import { initStats } from "../utils/StatsUtil";
+import ShimmerText from "./ShimmerText";
 import {
   DEF_NUM_STARS,
   DEF_NUM_SIMULATE,
@@ -30,6 +31,7 @@ import React, { useState, useEffect } from "react";
 import Slider from "./inputs/Slider";
 import Button from "./inputs/Button";
 import ButtonGroup from "./inputs/ButtonGroup";
+import { hideOnClickGalaxy } from "../utils/NotificationUtil";
 
 type Props = { rustWasm };
 
@@ -48,10 +50,13 @@ export default function Controls(props: Props) {
   const [theta, sT] = useState(DEF_THETA);
   const [dt, sDT] = useState(DEF_DT);
 
-  // On mount
+  const id = "black-hole-notif";
+  /* on mount, listen for creating new black hole/click,
+  then remove notification accordingly */
   useEffect(() => {
     init(rustWasm);
     initStats();
+    hideOnClickGalaxy(id);
   }, []);
 
   useEffect(() => {
@@ -80,6 +85,15 @@ export default function Controls(props: Props) {
 
   return (
     <>
+      <ShimmerText
+        id={id}
+        className={[
+          "upper notification",
+          isShown ? "out" : "shown",
+        ].join(" ")}
+      >
+        Click to create black hole
+      </ShimmerText>
       <form
         className={[
           "controls-panel upper",

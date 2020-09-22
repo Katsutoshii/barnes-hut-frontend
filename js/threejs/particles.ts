@@ -236,8 +236,7 @@ export function init(wasm) {
       onClick(event);
     }
   };
-  renderer.domElement.addEventListener("mouseup", onUp);
-  renderer.domElement.addEventListener("touchend", onUp);
+  renderer.domElement.addEventListener("click", onUp);
   // Initialize rest of global variables
   raycaster = new THREE.Raycaster();
   startTime = Date.now();

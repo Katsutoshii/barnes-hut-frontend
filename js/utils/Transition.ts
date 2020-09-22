@@ -92,6 +92,7 @@ class Transition {
         uOut: { value: true },
       },
     });
+    this.mat.extensions.derivatives = true;
 
     this.triangle = new THREE.Mesh(geo, this.mat);
     let s = w > h ? w : h;

@@ -9,23 +9,47 @@ $controls-panel-z-index: 1;
   justify-self: end;
 }
 
-.btn.controls:after {
-  content: "Controls";
+.btn.controls {
+  width: 120px;
+  height: 35px;
+  max-width: 40vw;
   position: relative;
+  &:after {
+    content: "Controls";
+    @include absolute;
+    padding: $nav-padding;
+    text-align: right;
+    opacity: 1;
+  }
+  &:before {
+    content: "Close";
+    @include absolute;
+    padding: $nav-padding;
+    text-align: right;
+    opacity: 0;
+  }
 }
 
 /* if not hidden, show close button; else, 
 show original button. 
 Do not change below ordering! Ordering of close-in, close-out is important! */
-.controls-panel.shown .btn.controls:after {
-  animation: close-in 0.5s ease forwards;
+.controls-panel.shown .btn.controls {
+  &:after {
+    animation: fade-out 0.25s ease both;
+  }
+  &:before {
+    animation: fade-in 0.2s ease 0.35s both;
+  }
 }
 
-@include close-out-mixin(
-  $label: "Controls",
-  $class: ".controls-panel.out .btn.controls:after",
-  $delay: 0s
-);
+.controls-panel.out .btn.controls {
+  &:before {
+    animation: fade-out 0.25s ease both;
+  }
+  &:after {
+    animation: fade-in 0.2s ease 0.3s both;
+  }
+}
 
 .controls-panel {
   @include absolute;
@@ -36,9 +60,7 @@ Do not change below ordering! Ordering of close-in, close-out is important! */
   width: 320px;
   min-width: 20vw;
   max-width: 100vw;
-  pointer-events: all;
   z-index: $controls-panel-z-index;
-  transition: backdrop-filter 0.5s ease;
   // barnes hut
   &.BarnesHut {
   }
@@ -50,7 +72,6 @@ Do not change below ordering! Ordering of close-in, close-out is important! */
   }
   &.shown {
     pointer-events: all;
-    backdrop-filter: blur(5px);
   }
 
   .btn {

@@ -13,6 +13,7 @@ body {
 #root {
   @include absolute();
   pointer-events: none;
+  animation: fade-out-black 1s ease 0.5s both;
 }
 
 #galaxy {
@@ -178,8 +179,13 @@ a,
 }
 
 .shimmer {
-  animation: fade-in 1.5s ease-in 0.5s both;
   text-shadow: $text-glow;
+  &.shown {
+    animation: fade-in 1.5s ease-in 0.5s both;
+  }
+  &.out {
+    animation: fade-out 0.5s ease-in both;
+  }
   span {
     // assuming notification string length <= 100
     @for $i from 2 through 100 {

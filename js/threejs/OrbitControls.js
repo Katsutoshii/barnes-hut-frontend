@@ -939,7 +939,7 @@ var OrbitControls = function (object, domElement) {
   function onTouchStart(event) {
     if (scope.enabled === false) return;
 
-    event.preventDefault(); // prevent scrolling
+    // remove event.preventDefault
 
     switch (event.touches.length) {
       case 1:

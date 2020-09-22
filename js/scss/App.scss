@@ -32,7 +32,7 @@ body {
     #050408,
     #1a1d2a,
     #271c49,
-    #593259
+    #4e2b4e
   );
   background-size: 300% 300%;
   animation: move-bg 70s ease infinite;
@@ -171,21 +171,21 @@ a,
 .notification {
   text-align: center;
   letter-spacing: $letter-spacing;
-  margin-top: 8vw;
+  margin-top: 8vh;
   &.out {
     animation: fade-out 1s ease-in both;
   }
 }
 
 .shimmer {
-  animation: fade-in 1.3s ease-in 0.5s both;
+  animation: fade-in 1.5s ease-in 0.5s both;
   text-shadow: $text-glow;
   span {
     // assuming notification string length <= 100
     @for $i from 2 through 100 {
       &:nth-of-type(#{$i}) {
         animation: shimmer
-          (random() * 3 + 2) +
+          (random() * 4 + 3) +
           s
           ease-in
           both
@@ -213,4 +213,10 @@ a,
   font-weight: 400;
   opacity: $grey-opacity;
   letter-spacing: $letter-spacing;
+}
+
+@media only screen and (max-width: 330px) {
+  .credits {
+    display: none;
+  }
 }

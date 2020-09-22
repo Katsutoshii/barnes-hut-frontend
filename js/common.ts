@@ -7,7 +7,7 @@ export enum Optimization {
 }
 
 // How many stars that will be simulated?
-export const DEF_NUM_SIMULATE = 500;
+export const DEF_NUM_SIMULATE = 1000;
 // Below should equal MAX_PARTICLES from lib.rs
 export const MAX_NUM_SIMULATE = 3000;
 export const MAX_NUM_DIRECT_SIMULATE = 500;
@@ -24,5 +24,5 @@ export const DEF_NUM_STARS = 300;
 export const MAX_NUM_STARS = 1200;
 export const DIMENSION = 3;
 // Other controls
-export const DEF_PAUSE = true;
+export const DEF_PAUSE = false;
 export const DEF_OPTIMIZATION = Optimization.BarnesHut;

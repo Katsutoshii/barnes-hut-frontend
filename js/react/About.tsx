@@ -56,8 +56,7 @@ function About() {
         <section className="text-content">
           <ShimmerText className="upper lg b">About</ShimmerText>
           <div>
-            Black hole simulation using direct and Barnes Hut
-            algorithms.
+            Galaxy simulation using direct and Barnes-Hut algorithms.
             <br />
             Rust backend at{" "}
             <a href="https://github.com/Katsutoshii/barnes-hut-rs">

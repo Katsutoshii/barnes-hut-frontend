@@ -213,16 +213,18 @@ export function init(wasm) {
   // Event listeners
   // Change camera on window resize
   window.addEventListener("resize", onWindowResize, false);
-  // Differentiate between click and drag
-  // If click, create new blackhole
-  renderer.domElement.addEventListener("mousedown", (event) => {
+  const onDown: any = (event) => {
     // Move this call from OrbitControls.js to here
     // To prevent the browser from scrolling.
     event.preventDefault();
     startX = event.pageX;
     startY = event.pageY;
-  });
-  renderer.domElement.addEventListener("mouseup", (event) => {
+  };
+  // Differentiate between click and drag
+  // If click, create new blackhole
+  renderer.domElement.addEventListener("mousedown", onDown);
+  renderer.domElement.addEventListener("touchstart", onDown);
+  const onUp: any = (event) => {
     // Move this call from OrbitControls.js to here
     event.preventDefault();
 
@@ -233,8 +235,9 @@ export function init(wasm) {
       // Click!
       onClick(event);
     }
-  });
-
+  };
+  renderer.domElement.addEventListener("mouseup", onUp);
+  renderer.domElement.addEventListener("touchend", onUp);
   // Initialize rest of global variables
   raycaster = new THREE.Raycaster();
   startTime = Date.now();
@@ -430,8 +433,6 @@ function animate() {
 
 // Update threejs scene
 function render() {
-  checkPlay();
-
   changeStarsHue();
 
   setTime();
@@ -440,6 +441,9 @@ function render() {
 
   // render to WebGLRenderer
   renderer.render(scene, camera);
+
+  // must call this after render if common.DEF_PAUSE == false
+  checkPlay();
 }
 
 // Set time uniform in all shaders that take in time

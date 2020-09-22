@@ -47,16 +47,34 @@ Do not change below ordering! Ordering of close-in, close-out is important! */
     @include row-grid(max-content, 2em);
     justify-items: center;
     align-content: center;
+    > * {
+      max-width: 80vw;
+    }
   }
 }
 
 .socials-container {
   @include column-grid(max-content, 2em);
+  max-width: 95vw;
 }
 
 .socials {
   @include row-grid(max-content, 1.2em);
+  word-wrap: break-word;
+  word-break: break-all;
+  max-width: 35vw;
+
   .media {
     @include column-grid(max-content, 0.5em);
+    word-break: normal;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .socials {
+    font-size: 11px;
+    .media {
+      grid-auto-flow: row dense;
+    }
   }
 }

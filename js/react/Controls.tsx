@@ -145,7 +145,7 @@ export default function Controls(props: Props) {
             value={theta}
             onChange={sT}
             className="theta"
-            label="Theta"
+            label="Threshold"
           />
           <Slider
             min={MIN_DT}

@@ -73,7 +73,7 @@ function About() {
           <div className="socials-container">
             <Socials
               name="Josiah Putman"
-              site="katsutoshii.github.io"
+              site="https://katsutoshii.github.io"
               socials={{
                 GitHub: "https://github.com/Katsutoshii",
               }}
@@ -81,7 +81,7 @@ function About() {
             <div className="vert-divider" />
             <Socials
               name="Angela He"
-              site="angelahe.dev"
+              site="https://angelahe.dev"
               socials={{
                 GitHub: "https://github.com/zephyo",
                 Twitter: "https://twitter.com/zephybite",

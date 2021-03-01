@@ -61,7 +61,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "stats.js": "^0.17.0",
-    "three": "^0.120.1"
+    "three": "^0.125.0"
   },
   "repository": {
     "type": "git",

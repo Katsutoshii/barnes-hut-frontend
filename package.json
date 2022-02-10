@@ -30,7 +30,7 @@
     "glslify": "^7.1.0",
     "jest": "^26.4.2",
     "mini-css-extract-plugin": "^0.10.0",
-    "node-sass": "^4.14.1",
+    "node-sass": "^7.0.0",
     "raw-loader": "^4.0.1",
     "regenerator-runtime": "^0.13.7",
     "rimraf": "^3.0.0",

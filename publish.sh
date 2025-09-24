@@ -12,6 +12,6 @@ cp -r dist/** galaxy-sim.github.io
 pushd galaxy-sim.github.io
 git add .
 git commit -am "Auto commit from publish.sh"
-git push
+git push origin master
 popd
 popd

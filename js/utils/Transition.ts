@@ -5,7 +5,7 @@ import Vertex from "./shaders/transition.vert";
 import Fragment from "./shaders/transition.frag";
 import * as THREE from "three";
 
-class Transition {
+export class Transition {
   parent: Element;
   renderer: THREE.WebGLRenderer;
   camera: THREE.OrthographicCamera;
@@ -13,13 +13,13 @@ class Transition {
   triangle: THREE.Mesh;
   mat: THREE.ShaderMaterial;
   tl: gsap.core.Timeline;
-  animating: boolean;
-  reverse: boolean;
+  animating: boolean = false;
+  reverse: boolean = false;
   //  width/height
   bounds: {
     w: number;
     h: number;
-  };
+  } = { w: 0, h: 0 };
 
   constructor(
     parent: Element,
@@ -216,7 +216,7 @@ class Transition {
   }
 }
 
-export function initTransition(parent, rotation, duration, hidden) {
+export function initTransition(parent: Element, rotation: number, duration: number, hidden: boolean) {
   if (parent == null) {
     return;
   }

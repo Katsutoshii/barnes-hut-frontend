@@ -1,77 +1,77 @@
 {
-  "contributors": [
-    "Angela He <heangela.arts@gmail.com>",
-    "Josiah Putman <joshikatsu@gmail.com>"
-  ],
-  "name": "barnes-hut-frontend",
-  "version": "0.1.0",
-  "scripts": {
-    "build": "rimraf dist pkg && webpack -p",
-    "start:server": "rimraf dist pkg && webpack-dev-server --open -d --watch",
-    "start": "npm run start:server",
-    "test": "cargo test; wasm-pack test --headless"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.10.5",
-    "@babel/core": "^7.11.4",
-    "@babel/node": "^7.10.5",
-    "@babel/plugin-proposal-class-properties": "^7.10.4",
-    "@babel/preset-env": "^7.11.0",
-    "@babel/preset-react": "^7.10.4",
-    "@babel/preset-typescript": "^7.10.4",
-    "@types/react": "^16.9.46",
-    "@types/react-dom": "^16.9.8",
-    "@wasm-tool/wasm-pack-plugin": "^1.1.0",
-    "babel-core": "^7.0.0-bridge.0",
-    "babel-jest": "^26.3.0",
-    "copy-webpack-plugin": "^5.0.3",
-    "cross-env": "^7.0.2",
-    "css-loader": "^4.2.1",
-    "glslify": "^7.1.0",
-    "jest": "^26.4.2",
-    "mini-css-extract-plugin": "^0.10.0",
-    "raw-loader": "^4.0.1",
-    "regenerator-runtime": "^0.13.7",
-    "rimraf": "^3.0.0",
-    "sass-loader": "^9.0.3",
-    "style-loader": "^1.2.1",
-    "ts-shader-loader": "^1.0.6",
-    "typescript": "^4.0.2",
-    "url-loader": "^4.1.0",
-    "webpack": "^4.42.0",
-    "webpack-cli": "^3.3.3",
-    "webpack-dev-server": "^3.7.1"
-  },
-  "description": "Based on https://github.com/rustwasm/rust-webpack-template.",
-  "main": "webpack.config.js",
-  "typings": "./js/index.d.ts",
-  "directories": {
-    "test": "tests"
-  },
-  "dependencies": {
-    "@types/jest": "^26.0.10",
-    "@types/node": "^14.6.0",
-    "babel-loader": "^8.0.0-beta.6",
-    "babel-preset-react-app": "^3.1.2",
-    "gl-react": "^4.0.1",
-    "gl-react-dom": "^4.0.1",
-    "glslify-loader": "^2.0.0",
-    "gsap": "^3.5.1",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "sass": "^1.93.2",
-    "stats.js": "^0.17.0",
-    "three": "^0.120.1",
-    "wasm-pack": "^0.13.1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/zephyo/galaxy_aug_2020.git"
-  },
-  "keywords": [],
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/zephyo/galaxy_aug_2020/issues"
-  },
-  "homepage": "https://github.com/zephyo/galaxy_aug_2020#readme"
+	"contributors": [
+		"Angela He <heangela.arts@gmail.com>",
+		"Josiah Putman <joshikatsu@gmail.com>"
+	],
+	"name": "barnes-hut-frontend",
+	"version": "0.1.0",
+	"scripts": {
+		"build": "rimraf dist pkg && webpack --mode production",
+		"start:server": "rimraf dist pkg && webpack-dev-server --open --mode development",
+		"start": "npm run start:server",
+		"test": "cargo test; wasm-pack test --headless"
+	},
+	"devDependencies": {
+		"@babel/cli": "^7.10.5",
+		"@babel/core": "^7.11.4",
+		"@babel/node": "^7.10.5",
+		"@babel/plugin-proposal-class-properties": "^7.10.4",
+		"@babel/preset-env": "^7.11.0",
+		"@babel/preset-react": "^7.10.4",
+		"@babel/preset-typescript": "^7.10.4",
+		"@types/react": "^16.9.46",
+		"@types/react-dom": "^16.9.8",
+		"@wasm-tool/wasm-pack-plugin": "^1.1.0",
+		"babel-core": "^7.0.0-bridge.0",
+		"babel-jest": "^26.3.0",
+		"copy-webpack-plugin": "^5.0.3",
+		"cross-env": "^7.0.2",
+		"css-loader": "^4.2.1",
+		"glslify": "^7.1.0",
+		"jest": "^26.4.2",
+		"mini-css-extract-plugin": "^0.10.0",
+		"raw-loader": "^4.0.1",
+		"regenerator-runtime": "^0.13.7",
+		"rimraf": "^3.0.0",
+		"sass-loader": "^9.0.3",
+		"style-loader": "^1.2.1",
+		"ts-shader-loader": "^1.0.6",
+		"typescript": "^4.0.2",
+		"url-loader": "^4.1.0",
+		"webpack": "^5.101.3",
+		"webpack-cli": "^5.1.4",
+		"webpack-dev-server": "^5.2.2"
+	},
+	"description": "Based on https://github.com/rustwasm/rust-webpack-template.",
+	"main": "webpack.config.js",
+	"typings": "./js/index.d.ts",
+	"directories": {
+		"test": "tests"
+	},
+	"dependencies": {
+		"@types/jest": "^26.0.10",
+		"@types/node": "^14.6.0",
+		"babel-loader": "^8.0.0-beta.6",
+		"babel-preset-react-app": "^3.1.2",
+		"gl-react": "^4.0.1",
+		"gl-react-dom": "^4.0.1",
+		"glslify-loader": "^2.0.0",
+		"gsap": "^3.5.1",
+		"react": "^16.13.1",
+		"react-dom": "^16.13.1",
+		"sass": "^1.93.2",
+		"stats.js": "^0.17.0",
+		"three": "^0.120.1",
+		"wasm-pack": "^0.13.1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/zephyo/galaxy_aug_2020.git"
+	},
+	"keywords": [],
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/zephyo/galaxy_aug_2020/issues"
+	},
+	"homepage": "https://github.com/zephyo/galaxy_aug_2020#readme"
 }

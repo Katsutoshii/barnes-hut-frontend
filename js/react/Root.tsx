@@ -5,22 +5,22 @@ import Controls from "./Controls";
 import About from "./About";
 import Credits from "./Credits";
 import Loading from "./Loading";
-
-type Props = { rustWasm };
+import type { RustWasm } from "../threejs/particles";
+type Props = { rustWasm: RustWasm };
 
 export default function Root(props: Props) {
-  const [loaded, setLoaded] = useState(false);
+	const [loaded, setLoaded] = useState(false);
 
-  useEffect(() => {
-    setLoaded(true);
-  }, []);
+	useEffect(() => {
+		setLoaded(true);
+	}, []);
 
-  return (
-    <ErrorBoundary>
-      <About />
-      <Controls {...props} />
-      <Credits />
-      <Loading loaded={loaded} />
-    </ErrorBoundary>
-  );
+	return (
+		<ErrorBoundary>
+			<About />
+			<Controls {...props} />
+			<Credits />
+			<Loading loaded={loaded} />
+		</ErrorBoundary>
+	);
 }

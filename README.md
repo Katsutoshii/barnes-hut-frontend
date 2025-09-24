@@ -22,6 +22,12 @@ git submodule update --init
 npm install
 ```
 
+## Testing
+
+```
+npm run start
+```
+
 ## Publish to Github Pages
 
 1. Create a Github Pages repo and replace galaxy-sim.github.io with your new repo.

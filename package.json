@@ -30,7 +30,6 @@
     "glslify": "^7.1.0",
     "jest": "^26.4.2",
     "mini-css-extract-plugin": "^0.10.0",
-    "node-sass": "^4.14.1",
     "raw-loader": "^4.0.1",
     "regenerator-runtime": "^0.13.7",
     "rimraf": "^3.0.0",
@@ -60,6 +59,7 @@
     "gsap": "^3.5.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "sass": "^1.93.2",
     "stats.js": "^0.17.0",
     "three": "^0.120.1"
   },

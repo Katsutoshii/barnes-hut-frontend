@@ -81,7 +81,7 @@ function About() {
             <div className="vert-divider" />
             <Socials
               name="Angela He"
-              site="https://angelahe.dev"
+              site="https://zephyo.github.io"
               socials={{
                 GitHub: "https://github.com/zephyo",
                 Twitter: "https://twitter.com/zephybite",

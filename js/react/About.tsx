@@ -21,7 +21,7 @@ function Socials(props: SocialProps) {
 			<a href={site}>{site}</a>
 			<div className="media">
 				{keys.map((key, i) => (
-					<a key={key} href={socials[key as keyof typeof socials]}>
+					<a key={key} href={socials[key]}>
 						{`${key}${i < keys.length - 1 ? "," : ""}`}
 					</a>
 				))}
@@ -32,14 +32,11 @@ function Socials(props: SocialProps) {
 
 function About() {
 	const [isShown, setShown] = useState(false);
-	const [transition, setTransition] = useState<import("../utils/Transition").Transition | null>(null);
+	const [transition, setTransition] = useState(null);
 	const panelRef = useRef(null);
 
 	useEffect(() => {
-		if (panelRef.current) {
-			const t = initTransition(panelRef.current, Math.PI, 1.25, true);
-			setTransition(t ?? null);
-		}
+		setTransition(initTransition(panelRef.current, Math.PI, 1.25, true));
 	}, [panelRef]);
 
 	return (

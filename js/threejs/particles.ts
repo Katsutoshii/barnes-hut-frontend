@@ -88,7 +88,7 @@ export function init(wasm: RustWasm) {
 
   // v = rustWasm.get_v();
   // a = rustWasm.get_a();
-  m = rustWasm.get_m();
+  // m = rustWasm.get_m();
 
   // Set up ThreeJS scene, camera
   const HEIGHT = window.innerHeight,
@@ -303,9 +303,6 @@ export function setDT(t: number) {
  */
 function setSimPos() {
   if (simPoints) {
-    // const positionAttr = simPoints.geometry.getAttribute("position") as THREE.BufferAttribute;
-    // positionAttr.copyArray(r);
-    // positionAttr.needsUpdate = true;
     simPoints.geometry.setAttribute( 'position', new THREE.BufferAttribute( r, DIMENSION ) );
   }
 }
@@ -313,10 +310,8 @@ function setSimPos() {
 // Update BufferGeometry's size attribute
 function setSimSize() {
   if (simPoints) {
-    // simPoints.geometry.getAttribute("size").array = m;
-    // const positionAttr = simPoints.geometry.getAttribute("size") as THREE.BufferAttribute;
-    // positionAttr.copyArray(m);
-    // simPoints.geometry.attributes.size.needsUpdate = true;
+    // Hack around the fact that m gets invalidated at this point sometimes due to WebAssembly limitations
+    m = rustWasm.get_m();
     simPoints.geometry.setAttribute( 'size', new THREE.BufferAttribute( m, 1 ) );
   }
 }
@@ -324,10 +319,6 @@ function setSimSize() {
 // Set BufferGeometry's color attribute
 function setSimColor() {
   if (simPoints) {
-    // simPoints.geometry.getAttribute("color").array = c;
-    // const positionAttr = simPoints.geometry.getAttribute("color") as THREE.BufferAttribute;
-    // positionAttr.copyArray(c);
-    // simPoints.geometry.attributes.color.needsUpdate = true;
     simPoints.geometry.setAttribute( 'color', new THREE.BufferAttribute( c, DIMENSION ) );
   }
 }
@@ -439,8 +430,6 @@ function tryUpdateBlackHoles() {
   }
 
   numBH = n;
-  // Hack around the fact that m gets invalidated at this point sometimes due to WebAssembly limitations
-  m = rustWasm.get_m();
   setSimSize();
   setSimPos();
   setSimColor();

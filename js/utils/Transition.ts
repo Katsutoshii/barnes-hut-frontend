@@ -11,7 +11,13 @@ export class Transition {
   camera: THREE.OrthographicCamera;
   scene: THREE.Scene;
   triangle: THREE.Mesh;
-  mat: THREE.ShaderMaterial;
+  mat: THREE.ShaderMaterial & {
+    uniforms: {
+      uProgress: { value: number };
+      uPower: { value: number };
+      uOut: { value: boolean };
+    };
+  };
   tl: gsap.core.Timeline;
   animating: boolean = false;
   reverse: boolean = false;
@@ -90,8 +96,15 @@ export class Transition {
         uProgress: { value: 0 },
         uPower: { value: 0 },
         uOut: { value: true },
-      },
-    });
+      }
+    }) as THREE.ShaderMaterial & {
+      uniforms: {
+        uProgress: { value: number };
+        uPower: { value: number };
+        uOut: { value: boolean };
+      };
+    };
+    
     this.mat.extensions.derivatives = true;
 
     this.triangle = new THREE.Mesh(geo, this.mat);
@@ -143,12 +156,13 @@ export class Transition {
       .add(() => {
         this.animating = false;
       })
-      .play();
+      .play(0);
   };
 
   in = () => {
     this.animating = true;
     this.reverse = false;
+
     this.parent.classList.add("out");
 
     const { uProgress } = this.mat.uniforms;
@@ -174,7 +188,7 @@ export class Transition {
         this.animating = false;
         this.parent.classList.add("hidden");
       })
-      .play();
+      .play(0);
   };
 
   bend = () => {
@@ -216,7 +230,7 @@ export class Transition {
   }
 }
 
-export function initTransition(parent: Element, rotation: number, duration: number, hidden: boolean) {
+export function initTransition(parent: Element | null, rotation: number, duration: number, hidden: boolean) {
   if (parent == null) {
     return;
   }
